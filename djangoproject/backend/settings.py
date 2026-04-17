@@ -59,6 +59,13 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+# DJOSER = {
+#     "SERIALIZERS": {
+#         "user": "users.serializers.UserSerializer",
+#         "current_user": "users.serializers.UserSerializer",
+#     }
+# }
+
 SPECTACULAR_SETTINGS = {
     'TITLE': 'CRM API',
     'DESCRIPTION': 'MVP ver. of crm api based on DDD & SOLID principles',
