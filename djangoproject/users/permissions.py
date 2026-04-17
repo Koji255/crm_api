@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission
 from .models import User
-from backend.enums import GroupEnum
+from djangoproject.backend.structures import GroupEnum
 
 
 class _HasRole(BasePermission):

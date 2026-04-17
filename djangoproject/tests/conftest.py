@@ -5,7 +5,7 @@ from typing import Dict, TypeVar
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
-from backend.enums import GroupEnum
+from djangoproject.backend.structures import GroupEnum
 from users.services import UserService
 
 
