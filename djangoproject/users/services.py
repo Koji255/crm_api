@@ -1,5 +1,5 @@
 import uuid
-from djangoproject.backend.structures import GroupEnum
+from backend.structures import GroupEnum
 from .models import User
 
 class UserService:

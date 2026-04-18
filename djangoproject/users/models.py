@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, Group
 from phonenumber_field.modelfields import PhoneNumberField
 
-from djangoproject.backend.structures import GroupEnum
+from backend.structures import GroupEnum
 
 # Create your models here.
 class User(AbstractUser):
