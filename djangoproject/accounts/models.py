@@ -9,6 +9,7 @@ Contract = TypeVar('Contract')
 
 '''
 1. Define uneditable fields in update in classes
+2. uow via atomic transactions (django builtin)
 '''
 
 # Create your models here.
@@ -23,6 +24,8 @@ class Account(models.Model):
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=True)
+    #FK Contract
+    #FK Lead
 
     def __str__(self):
         return f'{self.id}: {self.name} | {self.country}'
@@ -66,6 +69,7 @@ class Account(models.Model):
 # class Contact(models.Model): ...
 # class AccountContactM2M(models.Model): ...
 class Contact(models.Model):
+    #No contact entity without an account
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255, blank=True, null=True)
@@ -82,6 +86,6 @@ class Contact(models.Model):
     @staticmethod
     def update_data(contact_id: UUID, **fields) -> None:
         #uneditable_fields = set(); fields = set(fields.keys()); if a&b: raise exc
-        updated: int = Account.objects.filter(pk=contact_id).update(**fields)
+        updated: int = Contact.objects.filter(pk=contact_id).update(**fields)
         if not updated:
             raise Account.DoesNotExist('Contact not found')
