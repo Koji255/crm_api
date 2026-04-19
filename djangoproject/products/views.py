@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,6 +11,17 @@ from .serializers import CourseGeneralSerializer
 from .services import CourseService
 
 # Create your views here
+class CourseWebHooks:
+    @api_view(http_method_names=['POST'])
+    def create_course_api_view(self, request):
+        pass
+    @api_view(http_method_names=['PUT'])
+    def update_course_api_view(self, request):
+        pass
+    @api_view(http_method_names=['DELETE'])
+    def delete_course_api_view(self, request):
+        pass
+
 @extend_schema(tags=['v1_products'])
 class CourseViewSet(ViewSet):
     service = CourseService()
