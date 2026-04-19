@@ -25,6 +25,7 @@ urlpatterns = [
     path(r'api/v1/', include('djoser.urls')),
     path(r'api/v1/', include('users.urls')), #!!!!
     path(r'api/v1/', include('accounts.urls')),
+    path(r'api/v1/', include('products.urls')),
 
     path('schema-viewer/', include('schema_viewer.urls')), #db schema
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

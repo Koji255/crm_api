@@ -17,26 +17,26 @@ class CourseService():
             raise CourseNotFound(f'{CourseNotFound.MSG}\nDetails:{e}')
         return course
    
-    def create(self, **kwargs) -> bool:
-        '''Returns true if object was created'''
+    def create(self, **kwargs) -> Course:
+        '''Later will return dto instead of model'''
         try:
-           Course.objects.get_or_create(**kwargs)
+           course, _ = Course.objects.get_or_create(**kwargs)
         except IntegrityError as e:
            raise ValueError(f'Cannot create a course with such params\nkwargs{kwargs}\nDetails: \n{e}')
-        return True
+        return course
     
     def get(self, course_id: uuid.UUID) -> Course:
         # a bit weird
         return self._get_course(course_id)
     
-    def update(self, course_id: uuid.UUID, **kwargs) -> int:
+    def update(self, course_id: uuid.UUID, **kwargs) -> Course:
         '''Returns amount of rows affected by an update method'''
         with transaction.atomic():
             courses = Course.objects.filter(pk=course_id)
             if not courses.exists():
                 raise CourseNotFound(f'{CourseNotFound.MSG}\nID: {course_id}')
-            updated_rows = courses.update(**kwargs)
-            return updated_rows
+            courses.update(**kwargs)
+            return courses.first()
         
     def list(self) -> QuerySet:
         return Course.objects.all()

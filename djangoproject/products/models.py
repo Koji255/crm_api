@@ -7,6 +7,8 @@ from django.db import transaction, IntegrityError
 from typing import List, Dict, Optional, Union, TypeVar
 
 from backend.structures import ProductStatus
+from deals.models import Deal
+from contracts.models import Contract
 
 CourseObject = TypeVar('Course')
 
@@ -32,10 +34,10 @@ class Course(models.Model):
     
     @property
     def has_relations(self) -> bool:
-        relations = self.check_relations()
+        relations = self.list_relations()
         return True if relations else False #False if len(relations) == 0
 
-    def check_relations(self): #-> List[QuerySet]
+    def list_relations(self): #-> List[QuerySet]
         '''Do later'''
         deals = ...
         contracts = ...
@@ -82,24 +84,28 @@ class Course(models.Model):
     
 
 class ProductItem(models.Model):
+    #Fixed start & end date for all product items in single contract. It will appear in contract entity since creation
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     quantity = models.PositiveIntegerField(default=1)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     # discount_percent = models.DecimalField(decimal_places=2, default=0)
-    course = models.ForeignKey(Course, on_delete=models.PROTECT)
-    # deal = models.ForeignKey(Deal, on_delete=models.CASCADE, blank=False, null=False)
-    #Contract can be empty cuz deal come up before the contract
-    # contract = models.ForeignKey(Contract, on_delete=models.CASCADE, blank=True, null=True)
 
-    # class Meta:
-    #     constraints = [
-    #         models.CheckConstraint( #deprecated CheckConstraint
-    #             condition=(
-    #                 (Q(deal__isnull=False) & Q(contract__isnull=True)) | (Q(deal__isnull=True) & Q(contract__isnull=False))
-    #             ),
-    #             name="productitem_belongs_to_deal_xor_contract"
-    #         )
-    #     ]
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    deal = models.ForeignKey(Deal, on_delete=models.CASCADE, blank=False, null=False)
+    #Contract can be empty cuz deal come up before the contract
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, blank=True, null=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint( #deprecated CheckConstraint
+                condition=(
+                    (Q(deal__isnull=False)&Q(contract__isnull=True)) | (Q(deal__isnull=True)&Q(contract__isnull=False)) 
+                    &
+                    ~(Q(deal__isnull=True)&Q(contract__isnull=False)) #!!
+                ),
+                name="productitem_belongs_to_deal_xor_contract"
+            )
+        ]
 
     def total_price(self) -> str:
         return str(self.quantity * self.unit_price)

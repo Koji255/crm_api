@@ -13,10 +13,10 @@ class TestCourse:
 
         data = {'id': uuid.uuid4(), 'name': 'test_course', 'price': 25.00}
         res = course_service.create(**data) #if course succesfully created, res will get 1
-        assert res == True
+        assert res.name == data['name']
         #Idempotency check
         res = course_service.create(**data)
-        assert res == True
+        assert res.name == data['name']
 
         #Trying to fetch created entity from db
         course = course_service.get(course_id=data['id'])
@@ -29,8 +29,7 @@ class TestCourse:
         
         #Update non-existing field on existing course (idempotency)
         with pytest.raises(Exception):
-            updated_rows = course_service.update(course_id=data['id'], some_non_existing_row='some_value')
-            assert updated_rows == 0
+            course_service.update(course_id=data['id'], some_non_existing_row='some_value')
 
         # Try to update field on non-existing course entity
         with pytest.raises(Exception):
