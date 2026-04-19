@@ -3,7 +3,7 @@ from conftest import users_model, groups_model, services
 from django.contrib.auth.models import Group
 from users.models import User
 from users.services import UserService
-from djangoproject.backend.structures import GroupEnum
+from backend.structures import GroupEnum
 
 @pytest.mark.user
 class TestUser:

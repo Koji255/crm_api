@@ -3,6 +3,7 @@ from typing import TypeVar
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from backend.structures import ACCOUNT_TYPES, ACCOUNT_STATUSES, COUNTRIES
+from django.db.models import QuerySet
 
 Lead = TypeVar('Lead') # Will be replaced with real entities
 Contract = TypeVar('Contract')
@@ -65,6 +66,9 @@ class Account(models.Model):
             new_status = 'CUSTOMER'; self.update_data(self.id, status=new_status)
 
         return new_status
+    
+    def list_contacts(self) -> QuerySet:
+        return Contact.objects.filter(account__id=self.id).only('id', 'first_name', 'last_name', 'email')
     
 # class Contact(models.Model): ...
 # class AccountContactM2M(models.Model): ...

@@ -5,8 +5,10 @@ from typing import Dict, TypeVar
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
-from djangoproject.backend.structures import GroupEnum
+from backend.structures import GroupEnum
 from users.services import UserService
+from products.services import CourseService
+from products.models import Course as CourseModel
 
 
 User = get_user_model()
@@ -49,7 +51,16 @@ def groups_model(db) -> Group:
     return Group
 
 @pytest.fixture
+def courses_model(db) -> Dict[str, CourseModel]:
+    courses = {
+        'course1': CourseModel.objects.create(name='Course1', price=25.00),
+        'course2': CourseModel.objects.create(name='Course2', price=1500.00)
+    }
+    return courses
+
+@pytest.fixture
 def services() -> Dict[str, ServiceType]:
     return {
-        'user_service': UserService()
+        'user_service': UserService(),
+        'course_service': CourseService() 
     }

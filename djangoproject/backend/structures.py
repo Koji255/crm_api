@@ -1,5 +1,6 @@
 from enum import Enum
 from django.db.models import TextChoices # mb upgrade on textchoices later
+from django.db import models
 
 # GROUPS = set('Director', 'Manager', 'Analyst')
 class GroupEnum(Enum):
@@ -33,3 +34,12 @@ COUNTRIES = [ #I need functionality to extend this list manually (for director)
     ('EUROPE', 'europe'),
     ('OTHER', 'other')
 ]
+
+class CurrencyCode(models.TextChoices):
+    USD = 'USD', 'dollar'
+    RUB = 'RUB', 'ruble'
+
+class ProductStatus(models.TextChoices):
+    ACTIVE = 'ACTIVE', 'active',
+    ARCHIVED = 'ARCHIVED', 'archived'
+    DELETED = 'DELETED', 'deleted'

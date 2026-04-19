@@ -26,6 +26,7 @@ urlpatterns = [
     path(r'api/v1/', include('users.urls')), #!!!!
     path(r'api/v1/', include('accounts.urls')),
 
+    path('schema-viewer/', include('schema_viewer.urls')), #db schema
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # Optional UI:
     # path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

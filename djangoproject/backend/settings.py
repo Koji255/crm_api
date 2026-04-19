@@ -41,9 +41,11 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'djoser',
     'phonenumber_field',
+    'schema_viewer',
 
     'users',
-    'accounts'
+    'accounts',
+    'products'
 ]
 
 MIDDLEWARE = [
