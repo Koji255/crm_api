@@ -1,14 +1,16 @@
 from django.shortcuts import render
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from users.permissions import isDirector, isManager, isAnalyst, isManagerOrDirector
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
 
-from .serializers import CourseGeneralSerializer
+from .models import ProductItem
 from .services import CourseService
+from .serializers import CourseGeneralSerializer, ProductItemGeneralSerializer
 
 # Create your views here
 class CourseWebHooks:
@@ -24,9 +26,14 @@ class CourseWebHooks:
 
 @extend_schema(tags=['v1_products'])
 class CourseViewSet(ViewSet):
-    service = CourseService()
     serializer_class = CourseGeneralSerializer
+    service = CourseService()
 
+    def get_permissions(self):
+        if self.action in ('create', 'update', 'partial_update', 'destroy'):
+            return [isManagerOrDirector]
+        return super().get_permissions()
+    
     def get_queryset(self):
         return self.service.list()
     
@@ -66,3 +73,9 @@ class CourseViewSet(ViewSet):
     def destroy(self, request, pk=None):
         product_status = self.service.delete(course_id=pk)
         return Response({"product_status": product_status}, status=status.HTTP_200_OK)
+    
+@extend_schema(tags=['v1_product_items'])
+class ProductItemModelViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = ProductItemGeneralSerializer
+    queryset = ProductItem.objects.all()
