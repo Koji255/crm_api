@@ -84,6 +84,9 @@ class Contact(models.Model):
 
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='contacts') #many(contacts)2one(account)
 
+    class Meta:
+        unique_together = ['first_name', 'email', 'phone', 'account']
+
     def __str__(self):
         return f'{self.id}\n{self.email}'
 

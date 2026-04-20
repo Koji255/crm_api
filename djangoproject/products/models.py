@@ -7,8 +7,8 @@ from django.db import transaction, IntegrityError
 from typing import List, Dict, Optional, Union, TypeVar
 
 from backend.structures import ProductStatus
-from deals.models import Deal
-from contracts.models import Contract
+# from deals.models import Deal
+# from contracts.models import Contract
 
 CourseObject = TypeVar('Course')
 
@@ -28,6 +28,9 @@ class Course(models.Model):
     lms_course_ref = models.CharField(max_length=255, blank=True, null=True) #link to course entity in lms (with content)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True,  editable=True)
+
+    class Meta:
+        unique_together = ['name', 'lms_course_ref']
 
     def __str__(self):
         return f'ID: {self.id} | Name: {self.name} | Ref: {self.lms_course_ref}'
@@ -90,14 +93,14 @@ class ProductItem(models.Model):
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     # discount_percent = models.DecimalField(decimal_places=2, default=0)
 
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    deal = models.ForeignKey(Deal, on_delete=models.CASCADE, blank=False, null=False)
+    course = models.ForeignKey('products.Course', on_delete=models.CASCADE)
+    deal = models.ForeignKey('deals.Deal', on_delete=models.CASCADE, blank=False, null=False)
     #Contract can be empty cuz deal come up before the contract
-    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, blank=True, null=True)
+    contract = models.ForeignKey('contracts.Contract', on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         constraints = [
-            models.CheckConstraint( #deprecated CheckConstraint
+            models.CheckConstraint(
                 condition=(
                     (Q(deal__isnull=False)&Q(contract__isnull=True)) | (Q(deal__isnull=True)&Q(contract__isnull=False)) 
                     &

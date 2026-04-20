@@ -43,3 +43,8 @@ class ProductStatus(models.TextChoices):
     ACTIVE = 'ACTIVE', 'active',
     ARCHIVED = 'ARCHIVED', 'archived'
     DELETED = 'DELETED', 'deleted'
+
+class DealStatus(models.TextChoices):
+    OPEN = 'open', 'Open'
+    WON = 'won', 'Won'
+    LOST = 'lost', 'Lost'
