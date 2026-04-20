@@ -11,7 +11,7 @@ class TestCourse:
     def test_course_crud(self, courses_model, services):
         course_service: CourseService = services['course_service']
 
-        data = {'id': uuid.uuid4(), 'name': 'test_course', 'price': 25.00}
+        data = {'id': uuid.uuid4(), 'name': 'test_course', 'unit_price': 25.00}
         res = course_service.create(**data) #if course succesfully created, res will get 1
         assert res.name == data['name']
         #Idempotency check

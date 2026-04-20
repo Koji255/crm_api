@@ -1,11 +1,15 @@
 from uuid import uuid4
 from django.db import models
+from django.contrib.auth import get_user_model
 from backend.structures import DealStatus
 from django.utils import timezone
 from datetime import timedelta
 # from products.models import Course
 
-class DealNotFound(Exception): pass
+UserModel = get_user_model()
+
+class DealNotFound(Exception):
+    MSG = 'Object with given id does not exist'
 
 def default_working_date():
     return timezone.now() + timedelta(weeks=2.0)
@@ -18,7 +22,7 @@ class Deal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     title = models.CharField(max_length=255, blank=True, null=True) # make auto gen
     status = models.CharField(max_length=32, choices=DealStatus.choices, default=DealStatus.OPEN)
-    expected_value = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) #Cost (total from all product_items bounded to the deal)
+    expected_value = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, blank=True, null=True) #Cost (total from all product_items bounded to the deal)
     expected_close_date = models.DateField(null=True, blank=True, default=default_working_date) #!!!
     description = models.TextField(blank=True, null=True)
     loss_reason = models.TextField(blank=True, null=True)
@@ -26,12 +30,12 @@ class Deal(models.Model):
     updated_at = models.DateTimeField(auto_now=True, editable=True)
     closed_at = models.DateTimeField(null=True, blank=True)
 
-    account = models.ForeignKey('accounts.Account',on_delete=models.CASCADE)
-    owner = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True) # Staff that manages the deal
-    primary_contact = models.ForeignKey('accounts.Contact', on_delete=models.SET_NULL, null=True, blank=True) # Main contact face
+    account = models.ForeignKey('accounts.Account',on_delete=models.CASCADE, related_name='associated_deals')
+    owner = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, related_name='managed_deals') # Staff that manages the deal
+    primary_contact = models.ForeignKey('accounts.Contact', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_deals') # Main contact face
 
     class Meta:
-        unique_together = ['title', 'account', 'owner']
+        # unique_together = ['title', 'account', 'owner']
         ordering = ["-created_at"]
 
     def __str__(self):

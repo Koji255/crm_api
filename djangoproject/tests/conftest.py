@@ -8,7 +8,10 @@ from django.contrib.auth.models import Group
 from backend.structures import GroupEnum
 from users.services import UserService
 from products.services import CourseService
-from products.models import Course as CourseModel
+from products.models import Course as CourseModel, ProductItem as ProductItemModel
+from deals.models import Deal as DealModel
+from deals.services import DealService
+from accounts.models import Account as AccountModel
 
 
 User = get_user_model()
@@ -53,14 +56,39 @@ def groups_model(db) -> Group:
 @pytest.fixture
 def courses_model(db) -> Dict[str, CourseModel]:
     courses = {
-        'course1': CourseModel.objects.create(name='Course1', price=25.00),
-        'course2': CourseModel.objects.create(name='Course2', price=1500.00)
+        'course1': CourseModel.objects.create(name='Course1', unit_price=25.00),
+        'course2': CourseModel.objects.create(name='Course2', unit_price=1500.00)
     }
     return courses
+
+@pytest.fixture
+def accounts_model(db) -> Dict[str, AccountModel]:
+    accounts = {
+        'account1': AccountModel.objects.create(name='account1', city='New York', address='Quins 5'),
+        'account2': AccountModel.objects.create(name='account2', city='New York', address='Quins 6')
+    }
+    return accounts
+
+@pytest.fixture
+def deals_model(db, users_model, accounts_model) -> Dict[str, DealModel]:
+    deals = {
+        'deal1': DealModel.objects.create(title='Deal1', account=accounts_model['account1'], owner=users_model['manager1']),
+        'deal2': DealModel.objects.create(title='Deal2', account=accounts_model['account2'], owner=users_model['manager1'])
+    }
+    return deals
+
+@pytest.fixture
+def productitems_model(db, courses_model, deals_model) -> Dict[str, ProductItemModel]:
+    productitems = {
+        'productitem1': ProductItemModel.objects.create(course=courses_model['course1'], deal=deals_model['deal1']),
+        'productitem2': ProductItemModel.objects.create(course=courses_model['course2'], deal=deals_model['deal1'])
+    }
+    return productitems
 
 @pytest.fixture
 def services() -> Dict[str, ServiceType]:
     return {
         'user_service': UserService(),
-        'course_service': CourseService() 
+        'course_service': CourseService(),
+        'deal_service': DealService()
     }

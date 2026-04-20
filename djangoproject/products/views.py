@@ -11,6 +11,7 @@ from drf_spectacular.utils import extend_schema
 from .models import ProductItem
 from .services import CourseService
 from .serializers import CourseGeneralSerializer, ProductItemGeneralSerializer
+from deals.services import DealService
 
 # Create your views here
 class CourseWebHooks:
@@ -76,6 +77,21 @@ class CourseViewSet(ViewSet):
     
 @extend_schema(tags=['v1_product_items'])
 class ProductItemModelViewSet(ModelViewSet):
+    '''Add make_title on post'''
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = ProductItemGeneralSerializer
     queryset = ProductItem.objects.all()
+    deal_service = DealService()
+
+    def perform_create(self, serializer):
+        # update expected total value of related deal
+        pi = serializer.save()
+        deal_id = pi.deal_id
+        expected_value = self.deal_service.make_expected_value(deal_id=deal_id)
+        self.deal_service.update(deal_id, expected_value=expected_value)
+
+    def perform_update(self, serializer):
+        pi = serializer.save()
+        deal_id = pi.deal_id
+        expected_value = self.deal_service.make_expected_value(deal_id=deal_id)
+        self.deal_service.update(deal_id, expected_value=expected_value)

@@ -23,7 +23,7 @@ class Course(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=10, choices=ProductStatus.choices, default=ProductStatus.ACTIVE)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10, choices=CurrencyCode.choices, default=CurrencyCode.USD)
     lms_course_ref = models.CharField(max_length=255, blank=True, null=True) #link to course entity in lms (with content)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
@@ -90,25 +90,23 @@ class ProductItem(models.Model):
     #Fixed start & end date for all product items in single contract. It will appear in contract entity since creation
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     quantity = models.PositiveIntegerField(default=1)
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    # unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     # discount_percent = models.DecimalField(decimal_places=2, default=0)
 
-    course = models.ForeignKey('products.Course', on_delete=models.CASCADE)
-    deal = models.ForeignKey('deals.Deal', on_delete=models.CASCADE, blank=False, null=False)
+    course = models.ForeignKey('products.Course', on_delete=models.CASCADE, related_name='created_productitems')
+    deal = models.ForeignKey('deals.Deal', on_delete=models.CASCADE, blank=False, null=False, related_name='included_productitems')
     #Contract can be empty cuz deal come up before the contract
-    contract = models.ForeignKey('contracts.Contract', on_delete=models.CASCADE, blank=True, null=True)
+    contract = models.ForeignKey('contracts.Contract', on_delete=models.CASCADE, blank=True, null=True, related_name='fixed_productitems')
 
     class Meta:
         constraints = [
             models.CheckConstraint(
                 condition=(
-                    (Q(deal__isnull=False)&Q(contract__isnull=True)) | (Q(deal__isnull=True)&Q(contract__isnull=False)) 
-                    &
-                    ~(Q(deal__isnull=True)&Q(contract__isnull=False)) #!!
+                    (Q(deal__isnull=False)&Q(contract__isnull=True)) | (Q(deal__isnull=False)&Q(contract__isnull=False)) 
                 ),
-                name="productitem_belongs_to_deal_xor_contract"
+                name="productitem_belongs_to_deal_or_contract"
             )
         ]
 
-    def total_price(self) -> str:
-        return str(self.quantity * self.unit_price)
+    # def total_price(self) -> str:
+    #     return str(self.quantity * self.course.unit_price)
