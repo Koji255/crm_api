@@ -4,8 +4,9 @@ from django.db.models import QuerySet
 from typing import Dict
 
 from backend.structures import ProductStatus
-from .models import Course
-from .models import CourseNotFound #Exceptions
+from .models import Course, ProductItem
+from .models import CourseNotFound, ProductItemNotFound #Exceptions
+from deals.models import Deal, DealNotAvailable
 
 
 class CourseService():
@@ -55,3 +56,40 @@ class CourseService():
             except CourseNotFound:
                 status = ProductStatus.DELETED
             return status
+        
+
+class ProductItemService:
+    def _get_pi(self, pi_id: uuid.UUID) -> ProductItem:
+        '''Returns Course model object. Later replace with dto'''
+        try:
+            pi = ProductItem.objects.get(pk=pi_id)
+        except ProductItem.DoesNotExist as e:
+            raise ProductItemNotFound(f'{ProductItemNotFound.MSG}\nDetails:{e}')
+        return pi
+    
+    def get(self, pi_id: uuid.UUID) -> ProductItem:
+        # a bit weird
+        return self._get_pi(pi_id)
+    
+    def list(self) -> QuerySet:
+        return ProductItem.objects.all()
+
+    def create(self, **kwargs) -> ProductItem:      
+        '''Later will return dto instead of model'''
+        from deals.services import DealService # Avoiding circular import
+        from products.services import CourseService
+        
+        with transaction.atomic():
+            try:
+                DealService().validate_deal(kwargs.get('deal_id')) #Check deal exists & is deal open or not
+                CourseService().get(kwargs.get('course_id')) #Checks course existence
+                pi = ProductItem.objects.create(**kwargs)
+                return pi
+                # deal = Deal.objects.get(pk=kwargs.get('deal_id'))
+                # if not deal.is_open:
+                #     raise DealNotAvailable(f'{DealNotAvailable.MSG}')
+                # pi= ProductItem.objects.create(**kwargs)
+                # return pi
+
+            except IntegrityError as e:
+                raise ValueError(f'Cannot create a course with such params\nkwargs{kwargs}\nDetails: \n{e}')

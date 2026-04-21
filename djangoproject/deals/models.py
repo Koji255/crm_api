@@ -11,6 +11,9 @@ UserModel = get_user_model()
 class DealNotFound(Exception):
     MSG = 'Object with given id does not exist'
 
+class DealNotAvailable(Exception):
+    MSG = 'Given deal is already closed and not available for usage'
+
 def default_working_date():
     return timezone.now() + timedelta(weeks=2.0)
 
@@ -38,8 +41,20 @@ class Deal(models.Model):
         # unique_together = ['title', 'account', 'owner']
         ordering = ["-created_at"]
 
+    # def save(self, *args, **kwargs):
+    #     if not self.id:
+    #         self.id = uuid4()
+    #     if not self.title:
+    #         self.title = f'id:{str(self.id)[:8]}::account:{self.account.name}::owner:{self.owner.username}'
+    #     return super().save(*args, **kwargs)
+
     def __str__(self):
         return self.title
+    
+    @property
+    def is_open(self) -> bool:
+        '''Returns true if deal is open & it is possible to add product items (PIs) in'''
+        return self.status == DealStatus.OPEN
     
     # def make_title(self):
     #     hash_ = str(uuid4())[:4]

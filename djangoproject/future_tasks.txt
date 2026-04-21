@@ -1,0 +1,4 @@
+1. Оптимизация get_queryset(ов) через prefetch&select_related
+2. Обновить update по аналогии с update в deals.services
+3. Пагинация на контроллерах
+4. Перенести все сервисы в property (чтобы не было shared state)

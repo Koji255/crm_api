@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 
 from backend.structures import GroupEnum
 from users.services import UserService
-from products.services import CourseService
+from products.services import CourseService, ProductItemService
 from products.models import Course as CourseModel, ProductItem as ProductItemModel
 from deals.models import Deal as DealModel
 from deals.services import DealService
@@ -90,5 +90,6 @@ def services() -> Dict[str, ServiceType]:
     return {
         'user_service': UserService(),
         'course_service': CourseService(),
-        'deal_service': DealService()
+        'deal_service': DealService(),
+        'pi_service': ProductItemService()
     }

@@ -15,6 +15,9 @@ CourseObject = TypeVar('Course')
 class CourseNotFound(Exception):
     MSG = 'Object with given id does not exist'
 
+class ProductItemNotFound(Exception):
+    MSG = 'Object with given id does not exist'
+
 # Create your models here.
 class Course(models.Model):
     #Webhooks as controlers

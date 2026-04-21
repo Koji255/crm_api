@@ -48,3 +48,4 @@ class DealStatus(models.TextChoices):
     OPEN = 'open', 'Open'
     WON = 'won', 'Won'
     LOST = 'lost', 'Lost'
+    ARCHIVED = 'archived', 'Archived'

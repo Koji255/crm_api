@@ -5,11 +5,13 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
 
 from .models import ProductItem
 from .services import CourseService
+from products.services import ProductItemService
 from .serializers import CourseGeneralSerializer, ProductItemGeneralSerializer
 from deals.services import DealService
 
@@ -74,24 +76,47 @@ class CourseViewSet(ViewSet):
     def destroy(self, request, pk=None):
         product_status = self.service.delete(course_id=pk)
         return Response({"product_status": product_status}, status=status.HTTP_200_OK)
-    
+
+# @extend_schema(tags=['v1_product_items'])
+# class ProductItemModelViewSet(ModelViewSet): # migrate to service layer cuz too much logic
+#     '''Add make_title on post'''
+#     permission_classes = [IsAuthenticatedOrReadOnly]
+#     serializer_class = ProductItemGeneralSerializer
+#     deal_service = DealService()
+#     queryset = ProductItem.objects.all()
+
+#     def perform_create(self, serializer):
+#         inst = serializer.save()
+#         self.deal_service.add_to_deal(deal_id=inst.deal_id, pi_id=inst.id)
+#         # expected_value = self.deal_service.make_expected_value(deal_id=deal_id)
+#         # self.deal_service.update(deal_id, expected_value=expected_value)
+
+#     # def perform_update(self, serializer):
+#     #     pi = serializer.save()
+#     #     deal_id = pi.deal_id
+#     #     expected_value = self.deal_service.make_expected_value(deal_id=deal_id)
+#     #     self.deal_service.update(deal_id, expected_value=expected_value)
 @extend_schema(tags=['v1_product_items'])
-class ProductItemModelViewSet(ModelViewSet):
-    '''Add make_title on post'''
-    permission_classes = [IsAuthenticatedOrReadOnly]
+class ProductItemViewSet(ViewSet):
     serializer_class = ProductItemGeneralSerializer
-    queryset = ProductItem.objects.all()
-    deal_service = DealService()
+    service = ProductItemService()
 
-    def perform_create(self, serializer):
-        # update expected total value of related deal
-        pi = serializer.save()
-        deal_id = pi.deal_id
-        expected_value = self.deal_service.make_expected_value(deal_id=deal_id)
-        self.deal_service.update(deal_id, expected_value=expected_value)
-
-    def perform_update(self, serializer):
-        pi = serializer.save()
-        deal_id = pi.deal_id
-        expected_value = self.deal_service.make_expected_value(deal_id=deal_id)
-        self.deal_service.update(deal_id, expected_value=expected_value)
+    def get_permissions(self):
+        if self.action in ('create', 'update', 'partial_update', 'destroy'):
+            return [isManagerOrDirector]
+        return super().get_permissions()
+    
+    def get_queryset(self):
+        return self.service.list()
+    
+    def create(self, request):
+        serializer = ProductItemGeneralSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        pi = self.service.create(serializer.validated_data)
+        serializer = ProductItemGeneralSerializer(pi)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+    
+    # def retrieve(self, request, pk=None):
+    #     pi = self.service.get(pi_id=pk)
+    #     serializer = ProductItemGeneralSerializer(pi)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
