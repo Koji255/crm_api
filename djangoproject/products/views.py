@@ -9,10 +9,9 @@ from rest_framework.exceptions import ValidationError
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
 
-from .models import Course, ProductItem
+from .models import Course
 from .services import CourseService
-from products.services import ProductItemService
-from .serializers import CourseGeneralSerializer, ProductItemInputSerializer, ProductItemOutputSerializer
+from .serializers import CourseGeneralSerializer#, ProductItemInputSerializer, ProductItemOutputSerializer
 from deals.services import DealService
 
 # Create your views here
@@ -97,28 +96,23 @@ class CourseViewSet(ViewSet):
 #     #     deal_id = pi.deal_id
 #     #     expected_value = self.deal_service.make_expected_value(deal_id=deal_id)
 #     #     self.deal_service.update(deal_id, expected_value=expected_value)
-@extend_schema(tags=['v1_product_items'])
-class ProductItemViewSet(ModelViewSet):
-    serializer_class = ProductItemOutputSerializer
-    service = ProductItemService()
-    queryset = ProductItem.objects.all()
+# @extend_schema(tags=['v1_product_items'])
+# class ProductItemViewSet(ModelViewSet):
+#     serializer_class = ProductItemOutputSerializer
+#     service = ProductItemService()
+#     queryset = ProductItem.objects.all()
 
-    def get_permissions(self):
-        if self.action in ('create', 'update', 'partial_update', 'destroy'):
-            return [isManagerOrDirector()]
-        return super().get_permissions()
+#     def get_permissions(self):
+#         if self.action in ('create', 'update', 'partial_update', 'destroy'):
+#             return [isManagerOrDirector()]
+#         return super().get_permissions()
     
-    def get_queryset(self):
-        return self.service.list()
+#     def get_queryset(self):
+#         return self.service.list()
     
-    def create(self, request):
-        serializer = ProductItemInputSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        pi = self.service.create(serializer.validated_data) # Extra logic inside the service
-        serializer = ProductItemOutputSerializer(pi)
-        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-
-    # def retrieve(self, request, pk=None):
-    #     pi = self.service.get(pi_id=pk)
-    #     serializer = ProductItemGeneralSerializer(pi)
-    #     return Response(serializer.data, status=status.HTTP_200_OK)
+#     def create(self, request):
+#         serializer = ProductItemInputSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         pi = self.service.create(serializer.validated_data) # Extra logic inside the service
+#         serializer = ProductItemOutputSerializer(pi)
+#         return Response(data=serializer.data, status=status.HTTP_201_CREATED)

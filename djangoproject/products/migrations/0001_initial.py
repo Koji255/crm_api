@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('deals', '0004_deal_access_period_months_deal_contract_and_more'),
+        ('deals', '0001_initial'),
     ]
 
     operations = [

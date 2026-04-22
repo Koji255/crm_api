@@ -2,8 +2,8 @@ from uuid import UUID
 from backend.interfaces import AbstractRepository
 from django.db.models import QuerySet
 from backend.structures import ProductStatus
-from .models import Course, ProductItem
-from .models import CourseNotFound, ProductItemNotFound
+from .models import Course
+from .models import CourseNotFound
 
 class CourseRepository(AbstractRepository):
     def __init__(self):
@@ -25,18 +25,3 @@ class CourseRepository(AbstractRepository):
     
     def delete(self, id: UUID) -> None:
         self.session.objects.filter(pk=id).delete()
-
-
-class ProductItemRepository(AbstractRepository):
-    def __init__(self):
-        self.session = ProductItem
-
-    def save(self, **kwargs) -> ProductItem:
-        inst, _ = self.session.objects.update_or_create(**kwargs)
-        return inst
-    
-    def get(self, id: UUID) -> ProductItem:
-        return self.session.objects.get(pk=id)
-    
-    def list(self) -> QuerySet[ProductItem]:
-        return self.session.objects.all()

@@ -1,4 +1,5 @@
 from uuid import uuid4
+from decimal import Decimal
 from django.db import models
 from django.contrib.auth import get_user_model
 from backend.structures import DealStatus
@@ -12,6 +13,9 @@ class DealNotFound(Exception):
     MSG = 'Object with given id does not exist'
 class DealNotAvailable(Exception):
     MSG = 'Given deal is already closed and not available for usage'
+class DealItemNotFound(Exception):
+    MSG = 'Object with given id does not exist'
+
 
 def default_working_date():
     return timezone.now() + timedelta(weeks=2.0)
@@ -24,7 +28,6 @@ class Deal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     title = models.CharField(max_length=255, blank=True, null=True) # make auto gen
     status = models.CharField(max_length=32, choices=DealStatus.choices, default=DealStatus.OPEN)
-    access_period_months = models.PositiveSmallIntegerField(default=1)
     expected_value = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, blank=True, null=True) #Cost (total from all product_items bounded to the deal)
     expected_close_date = models.DateField(null=True, blank=True, default=default_working_date) #!!!
     description = models.TextField(blank=True, null=True)
@@ -49,3 +52,23 @@ class Deal(models.Model):
     def is_open(self) -> bool:
         '''Returns true if deal is open & it is possible to add product items (PIs) in'''
         return self.status == DealStatus.OPEN
+    
+
+class DealItem(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    quantity = models.PositiveIntegerField(default=1)
+    access_months = models.PositiveIntegerField(default=1)
+    #start_date&end_date will be set after contract creation in service
+    start_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
+    # discount_percent = models.DecimalField(decimal_places=2, default=0)
+
+    course = models.ForeignKey('products.Course', on_delete=models.CASCADE, related_name='pis_from_course')
+    deal = models.ForeignKey('deals.Deal', on_delete=models.CASCADE, related_name='pis_from_deal')
+
+    def __str__(self):
+        return f'{str(self.id)[:8]}::course:{self.course.name}::deal:{self.deal.title}'
+
+    @property
+    def total_cost(self) -> Decimal:
+        return Decimal(f'{ self.course.unit_price * self.quantity * self.access_months }') # later add discount

@@ -6,8 +6,8 @@ from django.db import transaction
 from django.db.utils import IntegrityError
 
 from backend.structures import DealStatus
-from products.models import Course, ProductItem
-from products.services import ProductItemService
+from products.models import Course#, ProductItem
+# from products.services import ProductItemService
 from .models import Deal, DealNotFound, DealNotAvailable
 
 class DealService():

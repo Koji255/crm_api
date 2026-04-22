@@ -16,8 +16,6 @@ CourseObject = TypeVar('Course')
 
 class CourseNotFound(Exception):
     MSG = 'Object with given id does not exist'
-class ProductItemNotFound(Exception):
-    MSG = 'Object with given id does not exist'
 
 # Create your models here.
 class Course(models.Model):
@@ -58,18 +56,18 @@ class Course(models.Model):
     #     contracts = ...
     #     return []
 
-class ProductItem(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    quantity = models.PositiveIntegerField(default=1)
-    access_months = models.PositiveIntegerField(default=1)
-    #start_date&end_date will be set after contract creation in service
-    start_date = models.DateTimeField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
-    # discount_percent = models.DecimalField(decimal_places=2, default=0)
+# class ProductItem(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+#     quantity = models.PositiveIntegerField(default=1)
+#     access_months = models.PositiveIntegerField(default=1)
+#     #start_date&end_date will be set after contract creation in service
+#     start_date = models.DateTimeField(blank=True, null=True)
+#     end_date = models.DateField(blank=True, null=True)
+#     # discount_percent = models.DecimalField(decimal_places=2, default=0)
 
-    course = models.ForeignKey('products.Course', on_delete=models.CASCADE, related_name='pis_from_course')
-    deal = models.ForeignKey('deals.Deal', on_delete=models.CASCADE, related_name='pis_from_deal')
+#     course = models.ForeignKey('products.Course', on_delete=models.CASCADE, related_name='pis_from_course')
+#     deal = models.ForeignKey('deals.Deal', on_delete=models.CASCADE, related_name='pis_from_deal')
 
-    @property
-    def total_cost(self) -> Decimal:
-        return Decimal(f'{ self.course.unit_price * self.quantity * self.access_months }') # later add discount
+#     @property
+#     def total_cost(self) -> Decimal:
+#         return Decimal(f'{ self.course.unit_price * self.quantity * self.access_months }') # later add discount
