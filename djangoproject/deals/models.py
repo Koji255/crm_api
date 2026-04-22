@@ -10,7 +10,6 @@ UserModel = get_user_model()
 
 class DealNotFound(Exception):
     MSG = 'Object with given id does not exist'
-
 class DealNotAvailable(Exception):
     MSG = 'Given deal is already closed and not available for usage'
 
@@ -25,6 +24,7 @@ class Deal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     title = models.CharField(max_length=255, blank=True, null=True) # make auto gen
     status = models.CharField(max_length=32, choices=DealStatus.choices, default=DealStatus.OPEN)
+    access_period_months = models.PositiveSmallIntegerField(default=1)
     expected_value = models.DecimalField(max_digits=10, decimal_places=2, default=0.0, blank=True, null=True) #Cost (total from all product_items bounded to the deal)
     expected_close_date = models.DateField(null=True, blank=True, default=default_working_date) #!!!
     description = models.TextField(blank=True, null=True)
@@ -34,19 +34,13 @@ class Deal(models.Model):
     closed_at = models.DateTimeField(null=True, blank=True)
 
     account = models.ForeignKey('accounts.Account',on_delete=models.CASCADE, related_name='associated_deals')
-    owner = models.ForeignKey(UserModel, on_delete=models.SET_NULL, null=True, related_name='managed_deals') # Staff that manages the deal
+    owner = models.ForeignKey(UserModel, on_delete=models.SET_NULL, blank=True, null=True, related_name='managed_deals') # Staff that manages the deal
+    contract = models.OneToOneField('contracts.Contract', on_delete=models.PROTECT, blank=True, null=True, related_name='based_on_deal')
     primary_contact = models.ForeignKey('accounts.Contact', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_deals') # Main contact face
 
     class Meta:
         # unique_together = ['title', 'account', 'owner']
         ordering = ["-created_at"]
-
-    # def save(self, *args, **kwargs):
-    #     if not self.id:
-    #         self.id = uuid4()
-    #     if not self.title:
-    #         self.title = f'id:{str(self.id)[:8]}::account:{self.account.name}::owner:{self.owner.username}'
-    #     return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -55,16 +49,3 @@ class Deal(models.Model):
     def is_open(self) -> bool:
         '''Returns true if deal is open & it is possible to add product items (PIs) in'''
         return self.status == DealStatus.OPEN
-    
-    # def make_title(self):
-    #     hash_ = str(uuid4())[:4]
-    #     organization = self.account.name
-    #     working_manager = self.owner.name
-    #     courses = Course.objects.filter(productitem__deal_id=self.pk).values_list('name', flat=True)
-    #     res = [hash_, organization, working_manager] + list(courses)
-    #     return '_'.join(res)
-    
-    # def save(self, *args, **kwargs):
-    #     if not self.title: #Title auto set
-    #         self.title = self.make_title()
-    #     return super().save(*args, **kwargs)

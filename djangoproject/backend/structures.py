@@ -40,12 +40,16 @@ class CurrencyCode(models.TextChoices):
     RUB = 'RUB', 'ruble'
 
 class ProductStatus(models.TextChoices):
-    ACTIVE = 'ACTIVE', 'active',
-    ARCHIVED = 'ARCHIVED', 'archived'
-    DELETED = 'DELETED', 'deleted'
+    ACTIVE = 'active', 'Active',
+    ARCHIVED = 'archived', 'Archived'
+    DELETED = 'deleted', 'Deleted'
 
 class DealStatus(models.TextChoices):
     OPEN = 'open', 'Open'
     WON = 'won', 'Won'
     LOST = 'lost', 'Lost'
     ARCHIVED = 'archived', 'Archived'
+
+class ContractStatus(models.TextChoices):
+    ACTIVE = 'active', 'Active'
+    EXPIRED = 'expired', 'Expired'

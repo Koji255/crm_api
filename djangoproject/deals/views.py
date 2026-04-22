@@ -9,6 +9,7 @@ from rest_framework import status
 from drf_spectacular.utils import extend_schema
 
 from backend.structures import DealStatus
+from .models import Deal
 from .serializers import DealGeneralSerializer, DealCloseGeneralSerializer
 from .services import DealService
 
@@ -17,6 +18,7 @@ from .services import DealService
 class DealViewSet(ViewSet):
     serializer_class = DealGeneralSerializer
     service = DealService()
+    queryset= Deal.objects.all()
 
     def get_permissions(self):
         if self.action in ('create', 'update', 'partial_update', 'destroy'):
@@ -60,7 +62,7 @@ class DealViewSet(ViewSet):
         return Response(data=serializer.data,status=status.HTTP_200_OK)
 
     # def destroy(self, request, pk=None):
-    
+
 class DealCloseAPIView(APIView):
     permission_classes = [isManagerOrDirector]
     service = DealService()
@@ -71,6 +73,6 @@ class DealCloseAPIView(APIView):
         deal_status = DealStatus(serializer.data.get('deal_status'))
         loss_reason = serializer.data.get('loss_reason') or None
 
-        updated_deal = self.service.close_deal(deal_id=pk, deal_status=deal_status, loss_reason=loss_reason)
-        serializer = DealCloseGeneralSerializer(updated_deal)
+        deal = self.service.close_deal(deal_id=pk, deal_status=deal_status, loss_reason=loss_reason)
+        serializer = DealCloseGeneralSerializer(deal)
         return Response(data=serializer.data, status=status.HTTP_200_OK)

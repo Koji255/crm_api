@@ -1,62 +1,44 @@
 import uuid
 from django.db import transaction, IntegrityError, DataError
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 from typing import Dict
-
 from backend.structures import ProductStatus
+
+from deals.models import Deal, DealNotAvailable
+from .repos import CourseRepository, ProductItemRepository
 from .models import Course, ProductItem
 from .models import CourseNotFound, ProductItemNotFound #Exceptions
-from deals.models import Deal, DealNotAvailable
 
 
 class CourseService():
-    def _get_course(self, course_id: uuid.UUID) -> Course:
-        '''Returns Course model object. Later replace with dto'''
-        try:
-            course = Course.objects.get(pk=course_id)
-        except Course.DoesNotExist as e:
-            raise CourseNotFound(f'{CourseNotFound.MSG}\nDetails:{e}')
-        return course
-   
-    def create(self, **kwargs) -> Course:
-        '''Later will return dto instead of model'''
-        try:
-           course, _ = Course.objects.get_or_create(**kwargs)
-        except IntegrityError as e:
-           raise ValueError(f'Cannot create a course with such params\nkwargs{kwargs}\nDetails: \n{e}')
-        return course
-    
-    def get(self, course_id: uuid.UUID) -> Course:
-        # a bit weird
-        return self._get_course(course_id)
-    
-    def update(self, course_id: uuid.UUID, **kwargs) -> Course:
-        '''Returns amount of rows affected by an update method'''
+    def __init__(self):
+        self.course_repo = CourseRepository()
+        self.pi_repo = ProductItemRepository()
+
+    def archive(self, id: uuid.UUID):
         with transaction.atomic():
-            courses = Course.objects.filter(pk=course_id)
-            if not courses.exists():
-                raise CourseNotFound(f'{CourseNotFound.MSG}\nID: {course_id}')
-            courses.update(**kwargs)
-            return courses.first()
-        
-    def list(self) -> QuerySet:
-        return Course.objects.all()
-    
-    def delete(self, course_id: uuid.UUID) -> ProductStatus: 
-        '''Course can be removed if & only if it has no relations in deals & contracts.\nElse only status will be changed (on archieved)'''
-        with transaction.atomic():
-            #Try for idempotency
-            try:
-                course = self._get_course(course_id=course_id) #Race risk
-                if course.has_relations:
-                    course.status = ProductStatus.ARCHIVED # make update logic
-                    course.save(); status = course.status
-                else:
-                    course.delete(); status = ProductStatus.DELETED
-            except CourseNotFound:
-                status = ProductStatus.DELETED
-            return status
-        
+            course = self.course_repo.get(id)
+            if course.is_archived: return
+
+            course.status = ProductStatus.ARCHIVED; course.save()
+            #delete pi that is bounded only to deal (by def pi can exist only with deal fk and contract is optional) #btw deal linked to contract, not pi
+            #so if no contracts made we can safely remove pi from all references 
+            self.pi_repo.session.objects.filter( Q(course_id=course.pk) & Q(deal__contract__isnull=True) ).delete()
+
+    def activate(self, id: uuid.UUID):
+        course = self.course_repo.get(id)
+        if not course.is_active:
+            course.status = ProductStatus.ACTIVE; course.save()
+
+    def delete(self, id: uuid.UUID):
+        # There are already archive() method, that allows to softly change course's status on archived & pop it from * deals, only contracts will store with row
+        # So first check contracts existence. If contracts in game, we should make soft status migration using archive
+        # else it is possible to forcifully delete the course via repo
+        active_contracts: bool = self.pi_repo.session.objects.filter( Q(course_id=id) & Q(deal__contract__isnull=False) ).exists()
+        if active_contracts:
+            self.archive(id); return
+        self.course_repo.delete(id)
+
 
 class ProductItemService:
     def _get_pi(self, pi_id: uuid.UUID) -> ProductItem:

@@ -12,8 +12,7 @@ from deals.models import Deal as DealModel, DealNotFound
 
 @pytest.mark.product
 class TestCourse:
-    def test_course_save_get_update_delete(self, courses_model, repos, services):
-        course_service: CourseService = services['course_service']
+    def test_course_save_get_update_delete(self, courses_model, repos):
         course_repo: CourseRepository = repos['course_repo']
 
         data = {'id': uuid.uuid4(), 'name': 'test_course', 'unit_price': 25.00}
@@ -47,31 +46,3 @@ class TestCourse:
 
         status = course_repo.delete(data['id']) # Idempotency check
         assert status is None
-
-# @pytest.mark.pi
-# class TestProducItem:
-#     def test_pi_create(self, courses_model, productitems_model, deals_model, services):
-#         pi_service: ProductItemService = services['pi_service']
-#         course1: CourseModel = courses_model['course1']
-#         deal1: DealModel = deals_model['deal1']
-
-#         #Trying to create new product item bounded to valid deal
-#         pi1 = pi_service.create(
-#             course_id = course1.pk,
-#             deal_id = deal1.pk
-#         )
-#         assert ProductItemModel.objects.filter(pk=pi1.pk).exists()
-#         assert pi1.deal.pk == deal1.pk
-#         # ic(pi1.deal.title)
-#         # ic(pi1.course.name)
-
-#         with pytest.raises(CourseNotFound):
-#             pi2 = pi_service.create(
-#                 course_id=uuid.uuid4(), #!
-#                 deal_id=deal1.pk
-#             )
-#         with pytest.raises(DealNotFound):
-#             pi2 = pi_service.create(
-#                 course_id=course1,
-#                 deal_id=uuid.uuid4() #!
-#             )

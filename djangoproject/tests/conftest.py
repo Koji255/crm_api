@@ -8,6 +8,7 @@ from django.contrib.auth.models import Group
 from backend.structures import GroupEnum
 from users.services import UserService
 from products.services import CourseService, ProductItemService
+from products.repos import CourseRepository, ProductItemRepository
 from products.models import Course as CourseModel, ProductItem as ProductItemModel
 from deals.models import Deal as DealModel
 from deals.services import DealService
@@ -17,6 +18,7 @@ from accounts.models import Account as AccountModel
 User = get_user_model()
 
 ServiceType = TypeVar('Service')
+RepoType = TypeVar('Repo')
 UserModel = TypeVar('User')
 
 
@@ -84,6 +86,13 @@ def productitems_model(db, courses_model, deals_model) -> Dict[str, ProductItemM
         'productitem2': ProductItemModel.objects.create(course=courses_model['course2'], deal=deals_model['deal1'])
     }
     return productitems
+
+@pytest.fixture
+def repos() -> Dict[str, RepoType]:
+    return {
+        'course_repo': CourseRepository(),
+        'pi_repo': ProductItemRepository()
+    }
 
 @pytest.fixture
 def services() -> Dict[str, ServiceType]:

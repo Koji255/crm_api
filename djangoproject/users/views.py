@@ -20,7 +20,6 @@ class RoleAPIView(APIView):
         serializer = RoleInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.service.set_role(pk, serializer.validated_data['role'])
-
         return Response(data={'status': f'role updated to {self.service.get_role(pk)}'}, status=status.HTTP_200_OK)
     
     @extend_schema(summary='v1_revoke_role')

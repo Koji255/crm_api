@@ -6,8 +6,12 @@ class CourseGeneralSerializer(serializers.ModelSerializer):
         model = Course
         fields = '__all__'
 
-class ProductItemGeneralSerializer(serializers.ModelSerializer):
-
+class ProductItemOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductItem
         fields = '__all__'
+
+class ProductItemInputSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductItem
+        fields = ['quantity', 'course', 'deal'] #contract creates automatically
