@@ -93,3 +93,16 @@ class ProductItemService:
 
             except IntegrityError as e:
                 raise ValueError(f'Cannot create a course with such params\nkwargs{kwargs}\nDetails: \n{e}')
+            
+    def update(self, pi_id: uuid.UUID, **kwargs) -> ProductItem:
+        '''Returns updated version of the product item'''
+        with transaction.atomic():
+            pi = self._get_pi(pi_id)
+            for field, val in kwargs.items(): #New ver. of update
+                setattr(pi, field, val)
+            pi.save()
+            return pi.refresh_from_db()
+    
+    def delete(self, pi_id: uuid.UUID) -> None:
+        # self._get_pi(pi_id).delete()
+        ProductItem.objects.filter(pi_id).delete()

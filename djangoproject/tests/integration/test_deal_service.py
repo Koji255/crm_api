@@ -50,3 +50,13 @@ class TestDeal:
         deal.refresh_from_db()
         assert deal.expected_value > Decimal('0')
         # ic(pi1); ic(pi2); ic(deal.expected_value)
+
+        # Close deal without contract module
+        #must update status field
+        assert deal.status == 'open'
+        # ic(deal.status)
+        deal_service.close_deal(deal.pk, deal_status='won')
+        deal.refresh_from_db()
+        assert deal.status == 'won'
+        # ic(deal.status)
+        

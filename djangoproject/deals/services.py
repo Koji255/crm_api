@@ -8,7 +8,6 @@ from django.db.utils import IntegrityError
 from backend.structures import DealStatus
 from products.models import Course, ProductItem
 from products.services import ProductItemService
-from contracts.services import ContractService
 from .models import Deal, DealNotFound, DealNotAvailable
 
 class DealService():
@@ -56,16 +55,18 @@ class DealService():
             if not deal.is_open:
                 raise DealNotAvailable(f'{DealNotAvailable.MSG}') # Add logic to manually select first available deal or create new one
 
-    def close_deal(self, deal_id: uuid.UUID, deal_status: DealStatus, loss_reason: str)-> Deal:
+    def close_deal(self, deal_id: uuid.UUID, deal_status: DealStatus, loss_reason: str=None)-> Deal:
+        from contracts.services import ContractService
+
         with transaction.atomic():
             deal = self._get_deal(deal_id)
             deal.status = deal_status
             if deal.status in (DealStatus.LOST, DealStatus.ARCHIVED):
                 deal.loss_reason = loss_reason
-            deal.save()
-            if deal.status == DealStatus.WON:
+            elif deal.status == DealStatus.WON:
                 contract_service = ContractService()
-                contract = contract_service.create(deal_id=deal.id) # add to dto
+                # contract = contract_service.create(deal_id=deal.id) # add to dto
+            deal.save()
 
             return deal # to return contract info with deal, migrate to dto
 

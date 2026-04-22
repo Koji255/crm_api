@@ -97,13 +97,13 @@ class CourseViewSet(ViewSet):
 #     #     expected_value = self.deal_service.make_expected_value(deal_id=deal_id)
 #     #     self.deal_service.update(deal_id, expected_value=expected_value)
 @extend_schema(tags=['v1_product_items'])
-class ProductItemViewSet(ViewSet):
+class ProductItemViewSet(ModelViewSet):
     serializer_class = ProductItemGeneralSerializer
     service = ProductItemService()
 
     def get_permissions(self):
         if self.action in ('create', 'update', 'partial_update', 'destroy'):
-            return [isManagerOrDirector]
+            return [isManagerOrDirector()]
         return super().get_permissions()
     
     def get_queryset(self):
@@ -112,10 +112,10 @@ class ProductItemViewSet(ViewSet):
     def create(self, request):
         serializer = ProductItemGeneralSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        pi = self.service.create(serializer.validated_data)
+        pi = self.service.create(serializer.validated_data) # Extra logic inside the service
         serializer = ProductItemGeneralSerializer(pi)
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-    
+
     # def retrieve(self, request, pk=None):
     #     pi = self.service.get(pi_id=pk)
     #     serializer = ProductItemGeneralSerializer(pi)
