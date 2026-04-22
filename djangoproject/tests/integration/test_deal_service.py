@@ -6,13 +6,13 @@ from backend.structures import ProductStatus
 from icecream import ic
 
 from accounts.models import Account as AccountModel
-from products.models import ProductItem as ProductItemModel
-from deals.models import Deal as DealModel
+# from products.models import ProductItem as ProductItemModel
+from deals.models import Deal as DealModel, DealItem as DealItemModel
 from deals.services import DealService
 
 @pytest.mark.deal
 class TestDeal:
-    def test_deal_crud(self, users_model, courses_model, deals_model, productitems_model, services):
+    def test_deal_crud(self, users_model, courses_model, deals_model, dealitems_model, services):
         deal_service: DealService = services['deal_service']
         account = AccountModel.objects.create(name='accountX', city='New York', address='Quins 7')
         owner = users_model['manager2']
@@ -41,8 +41,8 @@ class TestDeal:
         assert deal.expected_value == Decimal('0')
         
         #Rebuild PI from VS to apiview + services, in order to test pi in integration tests properly
-        pi1 = ProductItemModel.objects.create(course=courses_model['course1'], deal=deal, quantity=1)
-        pi2 = ProductItemModel.objects.create(course=courses_model['course2'], deal=deal, quantity=1)
+        pi1 = DealItemModel.objects.create(course=courses_model['course1'], deal=deal, quantity=1)
+        pi2 = DealItemModel.objects.create(course=courses_model['course2'], deal=deal, quantity=1)
 
         expected_value = deal_service._make_expected_value(deal.pk)
         deal_service.update(deal.id, expected_value=expected_value)

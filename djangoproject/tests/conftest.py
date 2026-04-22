@@ -7,10 +7,11 @@ from django.contrib.auth.models import Group
 
 from backend.structures import GroupEnum
 from users.services import UserService
-from products.services import CourseService, ProductItemService
-from products.repos import CourseRepository, ProductItemRepository
-from products.models import Course as CourseModel, ProductItem as ProductItemModel
-from deals.models import Deal as DealModel
+from products.services import CourseService#, ProductItemService
+from products.repos import CourseRepository#, ProductItemRepository
+from products.models import Course as CourseModel#, ProductItem as ProductItemModel
+from deals.models import Deal as DealModel, DealItem as DealItemModel
+from deals.repos import DealRepository, DealItemRepository
 from deals.services import DealService
 from accounts.models import Account as AccountModel
 
@@ -80,10 +81,10 @@ def deals_model(db, users_model, accounts_model) -> Dict[str, DealModel]:
     return deals
 
 @pytest.fixture
-def productitems_model(db, courses_model, deals_model) -> Dict[str, ProductItemModel]:
+def dealitems_model(db, courses_model, deals_model) -> Dict[str, DealItemModel]:
     productitems = {
-        'productitem1': ProductItemModel.objects.create(course=courses_model['course1'], deal=deals_model['deal1']),
-        'productitem2': ProductItemModel.objects.create(course=courses_model['course2'], deal=deals_model['deal1'])
+        'dealitem1': DealItemModel.objects.create(course=courses_model['course1'], deal=deals_model['deal1']),
+        'dealitem2': DealItemModel.objects.create(course=courses_model['course2'], deal=deals_model['deal1'])
     }
     return productitems
 
@@ -91,7 +92,7 @@ def productitems_model(db, courses_model, deals_model) -> Dict[str, ProductItemM
 def repos() -> Dict[str, RepoType]:
     return {
         'course_repo': CourseRepository(),
-        'pi_repo': ProductItemRepository()
+        'di_repo': DealItemRepository()
     }
 
 @pytest.fixture
@@ -100,5 +101,5 @@ def services() -> Dict[str, ServiceType]:
         'user_service': UserService(),
         'course_service': CourseService(),
         'deal_service': DealService(),
-        'pi_service': ProductItemService()
+        'di_service': DealItemRepository()
     }

@@ -24,12 +24,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='deal',
             name='contract',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='based_on_deal', to='contracts.contract'),
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='deal_from_contract', to='contracts.contract'),
         ),
         migrations.AlterField(
             model_name='deal',
             name='account',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='associated_deals', to='accounts.account'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='deals_from_account', to='accounts.account'),
         ),
         migrations.AlterField(
             model_name='deal',
@@ -39,12 +39,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='deal',
             name='owner',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='managed_deals', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='deals_from_owner', to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterField(
             model_name='deal',
             name='primary_contact',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='assigned_deals', to='accounts.contact'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='deal_from_contact', to='accounts.contact'),
         ),
         migrations.AlterField(
             model_name='deal',

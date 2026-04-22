@@ -5,9 +5,9 @@ from conftest import users_model, groups_model, courses_model, services
 from backend.structures import ProductStatus
 
 from products.models import Course as CourseModel
-from products.services import CourseService, ProductItemService
-from products.repos import ProductItemRepository, CourseRepository
-from products.models import ProductItemNotFound, CourseNotFound
+from products.services import CourseService#, ProductItemService
+from products.repos import CourseRepository
+from products.models import CourseNotFound
 from deals.models import Deal as DealModel, DealNotFound
 
 @pytest.mark.product
