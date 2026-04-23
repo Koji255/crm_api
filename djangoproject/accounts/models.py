@@ -46,12 +46,12 @@ class Account(models.Model):
             raise ValueError(f'Such an account already exists ({self.name})')
         super().save(*args, **kwargs)
     
-    @staticmethod
-    def update_data(account_id: UUID, **fields) -> None:
-        #uneditable_fields = set(); fields = set(fields.keys()); if a&b: raise exc
-        updated: int = Account.objects.filter(pk=account_id).update(**fields)
-        if not updated:
-            raise Account.DoesNotExist('Account not found')
+    # @staticmethod
+    # def update_data(account_id: UUID, **fields) -> None:
+    #     #uneditable_fields = set(); fields = set(fields.keys()); if a&b: raise exc
+    #     updated: int = Account.objects.filter(pk=account_id).update(**fields)
+    #     if not updated:
+    #         raise Account.DoesNotExist('Account not found')
         
     def update_status(self) -> None:
         '''function must be manually called after every state transition in leads & contracts (related with linked account)'''
@@ -64,11 +64,9 @@ class Account(models.Model):
             new_status = 'LEAD'; self.update_data(self.id, status=new_status)
         elif contracts.exists() and self.status != 'CUSTOMER': #!
             new_status = 'CUSTOMER'; self.update_data(self.id, status=new_status)
-
-        return new_status
     
-    def list_contacts(self) -> QuerySet:
-        return Contact.objects.filter(account__id=self.id).only('id', 'first_name', 'last_name', 'email')
+    # def list_contacts(self) -> QuerySet:
+    #     return Contact.objects.filter(account__id=self.id).only('id', 'first_name', 'last_name', 'email')
     
 # class Contact(models.Model): ...
 # class AccountContactM2M(models.Model): ...
