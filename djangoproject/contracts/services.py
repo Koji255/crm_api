@@ -30,7 +30,7 @@ class ContractService:
     
     def open(self, deal_id: uuid.UUID) -> Contract:
         '''Implement async task via celery to make contracts expiration'''
-        #requires real db like postgres to work
+        #requires real db like postgres to workk
         with transaction.atomic():
             contract = self.contract_repo.save()
             self.deal_repo.session.objects.filter(pk=deal_id).update(contract_id=contract.pk)
