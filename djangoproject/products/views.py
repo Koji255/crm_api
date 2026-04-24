@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from users.permissions import isDirector, isManager, isAnalyst, isManagerOrDirector
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
@@ -27,55 +27,40 @@ class CourseWebHooks:
         pass
 
 @extend_schema(tags=['v1_products'])
-class CourseViewSet(ViewSet):
+class CourseViewSet(ModelViewSet):
     serializer_class = CourseGeneralSerializer
-    service = CourseService()
     queryset = Course.objects.all()
+    service = CourseService()
 
     def get_permissions(self):
-        if self.action in ('create', 'update', 'partial_update', 'destroy'):
+        if self.action in ('create' , 'update', 'partial_update', 'destroy'):
             return [isManagerOrDirector]
-        return super().get_permissions()
-    
-    def get_queryset(self):
-        return self.service.list()
-    
-    def list(self, request):
-        courses = self.service.list()
-        serializer = CourseGeneralSerializer(courses, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-    
-    def retrieve(self, request, pk=None):
-        course = self.service.get(course_id=pk)
+        return [IsAuthenticated]
+        
+    def destroy(self, request, *args, **kwargs):
+        course_id = kwargs['pk']
+        try:
+            #custom service layer func
+            self.service.remove(id=course_id)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+    @extend_schema(summary='v1_courses_activate')
+    @action(methods=['post'], detail=True)
+    def activate(self, request, pk=None):
+        course =self.service.activate(id=pk)
         serializer = CourseGeneralSerializer(course)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return self.response(data=serializer.data, status=status.HTTP_200_OK)
     
-    def create(self, request):
-        serializer = CourseGeneralSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        course = self.service.create(serializer.validated_data)
+    @extend_schema(summary='v1_courses_archive')
+    @action(methods=['post'], detail=True)
+    def archive(self, request, pk=None):
+        course =self.service.archive(id=pk)
         serializer = CourseGeneralSerializer(course)
-        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-    
-    def update(self, request, pk=None):
-        serializer = CourseGeneralSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-        course = self.service.update(course_id=pk, **data) #!!
-        serializer = CourseGeneralSerializer(course)
-        return Response(data=serializer.data,status=status.HTTP_200_OK)
-    
-    def partial_update(self, request, pk=None):
-        serializer = CourseGeneralSerializer(data=request.data, partial=True) #!!
-        serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-        course = self.service.update(course_id=pk, **data) #!!
-        serializer = CourseGeneralSerializer(course)
-        return Response(data=serializer.data,status=status.HTTP_200_OK)
+        return self.response(data=serializer.data, status=status.HTTP_200_OK)
+        
 
-    def destroy(self, request, pk=None):
-        product_status = self.service.delete(course_id=pk)
-        return Response({"product_status": product_status}, status=status.HTTP_200_OK)
 
 # @extend_schema(tags=['v1_product_items'])
 # class ProductItemModelViewSet(ModelViewSet): # migrate to service layer cuz too much logic

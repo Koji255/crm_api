@@ -1,4 +1,5 @@
 import uuid
+import pytest
 from django.db import transaction, IntegrityError, DataError
 from django.db.models import QuerySet, Q
 from typing import Dict
@@ -10,13 +11,12 @@ from .repos import CourseRepository#, ProductItemRepository
 from .models import Course#, ProductItem
 from .models import CourseNotFound#, ProductItemNotFound #Exceptions
 
-
 class CourseService():
     def __init__(self):
         self.course_repo = CourseRepository()
         self.di_repo = DealItemRepository()
 
-    def archive(self, id: uuid.UUID):
+    def archive(self, id: uuid.UUID) -> Course:
         with transaction.atomic():
             course = self.course_repo.get(id)
             if course.is_archived: return
@@ -24,11 +24,13 @@ class CourseService():
             #delete pi that is bounded only to deal (by def pi can exist only with deal fk and contract is optional) #btw deal linked to contract, not pi
             #so if no contracts made we can safely remove pi from all references 
             self.di_repo.session.objects.filter( Q(course_id=course.pk) & Q(deal__contract__isnull=True) ).delete()
+            return course
 
-    def activate(self, id: uuid.UUID):
+    def activate(self, id: uuid.UUID) ->Course:
         course = self.course_repo.get(id)
         if not course.is_active:
             course.status = ProductStatus.ACTIVE; course.save()
+        return course
 
     def remove(self, id: uuid.UUID):
         with transaction.atomic():
