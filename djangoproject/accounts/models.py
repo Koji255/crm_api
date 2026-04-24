@@ -2,11 +2,14 @@ from uuid import UUID, uuid4
 from typing import TypeVar
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
-from backend.structures import ACCOUNT_TYPES, ACCOUNT_STATUSES, COUNTRIES
+from backend.structures import ACCOUNT_TYPES, AccountStatus, COUNTRIES
 from django.db.models import QuerySet
 
 Lead = TypeVar('Lead') # Will be replaced with real entities
 Contract = TypeVar('Contract')
+
+class AccountNotFound:
+    MSG = 'Account was not found'
 
 '''
 1. Define uneditable fields in update in classes
@@ -18,7 +21,7 @@ class Account(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     name = models.CharField(max_length=255)
     account_type = models.CharField(choices=ACCOUNT_TYPES, max_length=255, default='OTHER')
-    status = models.CharField(choices=ACCOUNT_STATUSES, max_length=255, default='NEW')
+    status = models.CharField(choices=AccountStatus, max_length=255, default=AccountStatus.NEW)
     country = models.CharField(choices=COUNTRIES, max_length=255, default='OTHER')
     city = models.CharField(max_length=255)
     address = models.CharField(max_length=255)

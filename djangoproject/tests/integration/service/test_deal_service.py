@@ -55,7 +55,7 @@ class TestDeal:
         deal_service.add_item(deal_id=deal.pk, di_id=di2.pk)
         deal.refresh_from_db()
         assert deal.expected_value == (di1.course.unit_price * di1.quantity * di1.access_months) + (di2.course.unit_price * di2.quantity * di2.access_months)
-        ic(di1); ic(di2); ic(deal.expected_value)
+        # ic(di1); ic(di2); ic(deal.expected_value)
 
         # Close deal without contract module
         #must update status field

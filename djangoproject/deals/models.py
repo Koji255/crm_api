@@ -62,7 +62,7 @@ class DealItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     access_months = models.PositiveIntegerField(default=1)
     #start_date&end_date will be set after contract creation in service
-    start_date = models.DateTimeField(blank=True, null=True)
+    start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
     # discount_percent = models.DecimalField(decimal_places=2, default=0)
 

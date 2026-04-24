@@ -1,9 +1,10 @@
-from uuid import UUID
+import uuid
 from django.db.models import QuerySet
-from backend.structures import ACCOUNT_STATUSES
+from backend.structures import AccountStatus, DealStatus, ContractStatus
 from .repos import AccountRepository
 from deals.repos import DealRepository
 from contracts.repos import ContractRepository
+from .models import Account, AccountNotFound
 
 class AccountService():
     def __init__(self):
@@ -11,20 +12,26 @@ class AccountService():
         self.deal_repo = DealRepository()
         self.contract_repo = ContractRepository()
 
-    def update_status(self, id: UUID) -> None:
+    def _get_account(self, id: uuid.UUID) -> Account:
+        '''Returns Deal Item model object. Later replace with dto'''
+        try:
+            return self.acc_repo.get(id=id)
+        except Account.DoesNotExist as e:
+            raise AccountNotFound(f'{AccountNotFound.MSG}\nDetails:{e}')
+
+    def update_status(self, id: uuid.UUID) -> None:
         '''Needs to upgrade'''
         '''function must be manually called after every state transition in leads & contracts (related with linked account)'''
         #New account sets automaticaly
-        leads = self.deal_repo.session.objects.filter(account_id=self.pk)
-        contracts = self.contract_repo.session.objects.filter(account_id=self.pk)
+        has_contracts = self.contract_repo.session.objects.filter(deal_from_contract__account_id=id).exists()
+        has_active_deals = self.deal_repo.session.objects.filter(account_id=id, status=DealStatus.OPEN).exists()
 
-        if leads.exists() and self.status != 'LEAD': # Mb prblms (LEAD instead of lead)
-            new_status = 'LEAD'
-            self.acc_repo.update(id=id, status=new_status)
-
-        elif contracts.exists() and self.status != 'CUSTOMER': #!
-            new_status = 'CUSTOMER'
-            self.acc_repo.update(id=id, status=new_status)
+        if has_contracts: 
+            self.acc_repo.update(id=id, status=AccountStatus.CUSTOMER)#!
+        elif has_active_deals: 
+            self.acc_repo.update(id=id, status=AccountStatus.LEAD) # Mb prblms (LEAD instead of lead)
+        else:
+            self.acc_repo.update(id=id, status=AccountStatus.ACTIVE)
         
     
     def list_contacts(self) -> QuerySet:

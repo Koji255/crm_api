@@ -14,6 +14,8 @@ from deals.models import Deal as DealModel, DealItem as DealItemModel
 from deals.repos import DealRepository, DealItemRepository
 from deals.services import DealService
 from accounts.models import Account as AccountModel
+from accounts.services import AccountService
+from contracts.services import ContractService
 
 
 User = get_user_model()
@@ -100,7 +102,9 @@ def repos() -> Dict[str, RepoType]:
 def services() -> Dict[str, ServiceType]:
     return {
         'user_service': UserService(),
+        'account_service': AccountService(),
         'course_service': CourseService(),
         'deal_service': DealService(),
-        'di_service': DealItemRepository()
+        # 'di_service': DealIte(),
+        'contract_service': ContractService()
     }
