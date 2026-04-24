@@ -13,6 +13,8 @@ class DealNotFound(Exception):
     MSG = 'Object with given id does not exist'
 class DealNotAvailable(Exception):
     MSG = 'Given deal is already closed and not available for usage'
+class DealCanNotUpdate(Exception):
+    MSG = 'Failed to update the Deal'
 class DealItemNotFound(Exception):
     MSG = 'Object with given id does not exist'
 
@@ -68,7 +70,7 @@ class DealItem(models.Model):
     deal = models.ForeignKey('deals.Deal', on_delete=models.CASCADE, related_name='di_from_deal')
 
     def __str__(self):
-        return f'{str(self.id)[:8]}::course:{self.course.name}::deal:{self.deal.title}'
+        return f'{str(self.id)[:8]}::course:{self.course.name}::deal:{str(self.deal.pk)[:8]}'
 
     @property
     def total_cost(self) -> Decimal:

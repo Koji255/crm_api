@@ -75,8 +75,8 @@ def accounts_model(db) -> Dict[str, AccountModel]:
 @pytest.fixture
 def deals_model(db, users_model, accounts_model) -> Dict[str, DealModel]:
     deals = {
-        'deal1': DealModel.objects.create(title='Deal1', account=accounts_model['account1'], owner=users_model['manager1']),
-        'deal2': DealModel.objects.create(title='Deal2', account=accounts_model['account2'], owner=users_model['manager1'])
+        'deal1': DealModel.objects.create(account=accounts_model['account1'], owner=users_model['manager1']),
+        'deal2': DealModel.objects.create(account=accounts_model['account2'], owner=users_model['manager1'])
     }
     return deals
 
@@ -84,7 +84,7 @@ def deals_model(db, users_model, accounts_model) -> Dict[str, DealModel]:
 def dealitems_model(db, courses_model, deals_model) -> Dict[str, DealItemModel]:
     productitems = {
         'dealitem1': DealItemModel.objects.create(course=courses_model['course1'], deal=deals_model['deal1']),
-        'dealitem2': DealItemModel.objects.create(course=courses_model['course2'], deal=deals_model['deal1'])
+        'dealitem2': DealItemModel.objects.create(course=courses_model['course2'], deal=deals_model['deal1'], access_months=3)
     }
     return productitems
 
@@ -92,6 +92,7 @@ def dealitems_model(db, courses_model, deals_model) -> Dict[str, DealItemModel]:
 def repos() -> Dict[str, RepoType]:
     return {
         'course_repo': CourseRepository(),
+        'deal_repo': DealRepository(),
         'di_repo': DealItemRepository()
     }
 

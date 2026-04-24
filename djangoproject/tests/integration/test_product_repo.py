@@ -17,10 +17,10 @@ class TestCourse:
         course_repo: CourseRepository = repos['course_repo']
 
         data = {'id': uuid.uuid4(), 'name': 'test_course', 'unit_price': 25.00}
-        res = course_repo.save(**data) #if course succesfully created, res will get 1
+        res, _ = course_repo.save(**data) #if course succesfully created, res will get 1
         assert res.name == data['name']
         #Idempotency check
-        res = course_repo.save(**data)
+        res, _ = course_repo.save(**data)
         assert res.name == data['name']
 
         #Trying to fetch created entity from db
