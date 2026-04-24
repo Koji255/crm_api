@@ -83,7 +83,7 @@ class Contact(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=True)
 
-    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='contacts') #many(contacts)2one(account)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='contacts_from_account') #many(contacts)2one(account)
 
     class Meta:
         unique_together = ['first_name', 'email', 'phone', 'account']

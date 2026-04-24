@@ -12,7 +12,7 @@ from .serializers import AccountGeneralSerializer, ContactGeneralSerializer
 class AccountModelViewSet(viewsets.ModelViewSet):
     permission_classes = [isManagerOrDirector]
     serializer_class = AccountGeneralSerializer
-    queryset = Account.objects.all()
+    queryset = Account.objects.prefetch_related('contacts_from_account') # for list of qs in serializer
 
 @extend_schema(tags=['v1_contacts'])
 class ContactModelViewSet(viewsets.ModelViewSet):

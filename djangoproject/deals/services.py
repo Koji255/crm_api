@@ -8,15 +8,17 @@ from django.db.models import QuerySet, F, Sum, DecimalField
 
 from backend.structures import DealStatus
 from products.models import Course#, ProductItem
-from accounts.repos import AccountRepository
+# from accounts.repos import AccountRepository
 # from products.services import ProductItemService
 from .models import Deal, DealItem, DealNotFound, DealNotAvailable, DealItemNotFound, DealCanNotUpdate
 from .repos import DealRepository, DealItemRepository
 
 class DealService():
-    def __init__(self):
+    def __init__(self, account_service=None, contract_service=None):
         self.deal_repo = DealRepository()
         self.di_repo = DealItemRepository()
+        self.account_service = account_service
+        self.contract_service = contract_service
 
     def _get_deal(self, id: uuid.UUID) -> Deal:
         '''Returns Course model object. Later replace with dto'''
@@ -41,19 +43,28 @@ class DealService():
             )
         )
         return result['total']
-
+    
+    @transaction.atomic
     def open(self, **kwargs)-> Deal:
         #than, in aggregate update account's status
         # if 'account_id' not in kwargs or not isinstance(kwargs['account_id'], uuid.UUID):
         #     raise DealNotFound(DealNotFound.MSG)
-        return self.deal_repo.save(**kwargs)
+        deal= self.deal_repo.save(**kwargs)
+        self.account_service.update_status(id=deal.account.pk)
+        return deal
 
-    def close(self, id: uuid.UUID, status: DealStatus=DealStatus.WON, loss_reason: str|None=None) -> None:
+    @transaction.atomic()
+    def close(self, id: uuid.UUID, status: DealStatus=DealStatus.WON, loss_reason: str|None=None) -> Deal:
         #Workflow: DealService.close(); ContractService.open() (if deal.is_won); AccountService.update_stats
-        # if status in (DealStatus.LOST, DealStatus.ARCHIVED):
-        n = self.deal_repo.update(id=id, status=status, loss_reason=loss_reason, closed_at=timezone.now()) #close deal entity & return affected rows
-        if n == 0: raise DealNotFound(f'{DealNotFound.MSG}')
+            n = self.deal_repo.update(id=id, status=status,loss_reason=loss_reason, closed_at=timezone.now())
+            if n == 0: raise DealNotFound(f'{DealNotFound.MSG}')
 
+            deal = self._get_deal(id=id)
+            if status == DealStatus.WON:
+                self.contract_service.open(deal_id=deal.pk)#close deal entity & return affected rows
+            self.account_service.update_status(id=deal.account_id)
+            return deal
+        
     def add_item(self, deal_id: uuid.UUID, di_id: uuid.UUID):
         # di = self._get_di(id=di_id)
         # di.deal_id = deal_id; di.save() #!

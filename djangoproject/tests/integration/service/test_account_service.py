@@ -30,7 +30,7 @@ class TestAccount:
         assert acc1.status == AccountStatus.LEAD
         # ic(acc1.status)
 
-        deal_service.close(id=deal.id)
+        deal_service.close(id=deal.id, status=DealStatus.LOST)
         acc_service.update_status(id=acc1.pk)
         acc1.refresh_from_db()
         assert acc1.status == AccountStatus.ACTIVE

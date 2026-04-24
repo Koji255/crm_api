@@ -35,7 +35,7 @@ class TestContract:
         today = timezone.now().date()
         # Assert: контракт создан
         assert contract is not None
-        assert contract.deal_from_contract == deal.pk
+        assert contract.deal_from_contract.pk == deal.pk
 
         # Assert: даты проставлены
         assert di.start_date == today

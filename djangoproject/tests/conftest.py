@@ -104,7 +104,7 @@ def services() -> Dict[str, ServiceType]:
         'user_service': UserService(),
         'account_service': AccountService(),
         'course_service': CourseService(),
-        'deal_service': DealService(),
+        'deal_service': DealService(account_service=AccountService(),contract_service=ContractService()),
         # 'di_service': DealIte(),
         'contract_service': ContractService()
     }

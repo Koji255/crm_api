@@ -4,6 +4,7 @@ from .models import User
 
 class UserService:
     '''No repo for now'''
+    '''Bullshit btw'''
     #later when tasks and notes will come up this service layer will be usefull
     # def __init__(self, user_id: uuid.UUID):
     #     self.user = User.objects.get(pk=user_id)

@@ -34,12 +34,18 @@ class ContractService:
         with transaction.atomic():
             contract = self.contract_repo.save()
             self.deal_repo.session.objects.filter(pk=deal_id).update(contract_id=contract.pk)
-            date = timezone.now().date()
-            self.di_repo.session.objects.filter(deal__contract_id=contract.pk).update(
-                start_date = date,
-                end_date = ExpressionWrapper(
-                    F('access_months') * timedelta( weeks=4 ) + date, # get access months & convert to weeks per di
-                    output_field=models.DateField()
-                )
-            )
+            start_date = timezone.now().date()
+            # self.di_repo.session.objects.filter(deal__contract_id=contract.pk).update(
+            #     start_date = date,
+            #     end_date = ExpressionWrapper(
+            #         F('access_months') * timedelta( weeks=4 ) + date, # get access months & convert to weeks per di
+            #         output_field=models.DateField()
+            #     )
+            # )
+            qs = self.di_repo.session.objects.select_for_update().filter(deal__contract_id=contract.pk)
+            for q in qs: # Potential n+1
+                q.start_date = start_date
+                q.end_date = start_date + timedelta(weeks=4*q.access_months)
+                # q.save()
+            qs.bulk_update(qs, fields=['start_date', 'end_date']) # n+1 fix
             return contract
