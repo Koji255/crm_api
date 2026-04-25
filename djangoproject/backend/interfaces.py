@@ -22,7 +22,7 @@ class BaseRepository(AbstractRepository):
     session = None
 
     def save(self, **kwargs) -> Model:
-        inst = self.session.objects.update_or_create(**kwargs)
+        inst, _ = self.session.objects.update_or_create(**kwargs)
         return inst
     
     def update(self, id: UUID, **kwargs) -> int:

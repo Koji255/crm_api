@@ -23,8 +23,8 @@ class TestDeal:
         # Try to create new deal with title auto generation
         deal = deal_service.open(account_id=account.pk, owner_id=owner.pk)
         assert deal.expected_value == Decimal('0')
-        assert DealModel.objects.filter(account_id=account.pk).exists()
-        assert DealModel.objects.filter(account_id=account.pk).count() == 1
+        qs= DealModel.objects.filter(account_id=account.pk)
+        assert qs.exists() and qs.count() == 1
 
         # No idempotency. Can create new deal with same 'open' status
         deal = deal_service.open(account_id=account.pk, owner_id=owner.pk)
@@ -42,20 +42,30 @@ class TestDeal:
         
         #ADD DEALITEM & REMOVE DEALITEM
         #Rebuild PI from VS to apiview + services, in order to test pi in integration tests properly
-        di1 = dealitems_model['dealitem1']
-        di2 = dealitems_model['dealitem2']
+        # di1 = dealitems_model['dealitem1']
+        # di2 = dealitems_model['dealitem2']
 
         # expected_value = deal_service._make_expected_value(deal.pk)
         # deal_repo.update(deal.id, expected_value=expected_value)
-        deal_service.add_item(deal_id=deal.pk, di_id=di1.pk)
+        course1= courses_model['course1']
+        di1= deal_service.add_item(deal_id=deal.pk, course_id=course1.pk)
         deal.refresh_from_db()
         assert deal.expected_value > Decimal('0')
         # ic(di1); ic(di2); ic(deal.expected_value)
 
-        deal_service.add_item(deal_id=deal.pk, di_id=di2.pk)
+        course2 = courses_model['course2']
+        di2 = deal_service.add_item(deal_id=deal.pk, course_id=course2.pk)
         deal.refresh_from_db()
         assert deal.expected_value == (di1.course.unit_price * di1.quantity * di1.access_months) + (di2.course.unit_price * di2.quantity * di2.access_months)
+        tmp_exp_val1 = deal.expected_value
         # ic(di1); ic(di2); ic(deal.expected_value)
+
+        #REMOVE DEAL ITEM FROM THE DEAL (completely)
+        deal_service.remove_item(di_id=di2.pk)
+        deal.refresh_from_db()
+        tmp_exp_val2 = deal.expected_value
+        assert tmp_exp_val2 < tmp_exp_val1
+
 
         # Close deal without contract module
         #must update status field

@@ -12,7 +12,7 @@ from backend.structures import DealStatus
 from accounts.services import AccountService
 from contracts.services import ContractService
 from .models import Deal
-from .serializers import DealGeneralSerializer, DealCloseSerializer
+from .serializers import DealGeneralSerializer, DealCloseSerializer, DealItemInputSerializer, DealItemOutputSerializer
 from .services import DealService
 
 
@@ -40,6 +40,7 @@ class DealViewSet(ModelViewSet):
         serializer = DealGeneralSerializer(deal) # Can change on DealInputSerializer
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
+    @extend_schema(operation_id='v1_deals_close', request=None)
     @action(methods=['post'], detail=True)
     def close(self, request, *args, **kwargs):
         '''Close the deal'''
@@ -49,3 +50,17 @@ class DealViewSet(ModelViewSet):
         serializer = DealGeneralSerializer(deal)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
     
+    @extend_schema(operation_id='v1_deals_add_deal_item', request=None)
+    @action(methods=['post'], detail=True, url_path='items')
+    def add_item(self, request, *args, **kwargs):
+        serializer = DealItemInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        di = self.service.add_item(deal_id=kwargs['pk'], **serializer.validated_data)
+        return Response(data=DealItemOutputSerializer(di).data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(operation_id='v1_deals_remove_deal_item', request=None) #specify di_id param to resolve prblms in openapi
+    @action(methods=['post'], detail=True, url_path='items/(?P<di_id>[^/.]+)') #capture res into di_id by the rule: seq of chars up to '/' or '.'
+    def remove_item(self, request, *args, **kwargs):
+        deal_id, di_id = kwargs['pk'], kwargs['di_id']
+        self.service.remove_item(di_id=di_id, deal_id=deal_id)
+        return Response(status=status.HTTP_204_NO_CONTENT)

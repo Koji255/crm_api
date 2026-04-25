@@ -34,15 +34,20 @@ class DealService():
         except DealItem.DoesNotExist as e:
             raise DealItemNotFound(f'{DealItemNotFound.MSG}\nDetails:{e}')
 
-    def get_exp_val(self, id: uuid.UUID) -> Decimal:
+    def _calc_exp_val(self, id: uuid.UUID) -> Decimal:
         '''from DealItem sum of products of 2 columns from join with Course'''
-        result = self.deal_repo.session.objects.filter(pk=id).aggregate( # Try to migrate on session.filter
+        res = self.deal_repo.session.objects.filter(pk=id).aggregate( # Try to migrate on session.filter
             total = Sum(
                 F('di_from_deal__course__unit_price') * F('di_from_deal__quantity') * F('di_from_deal__access_months'), # add discount
                 output_field=DecimalField()
             )
-        )
-        return result['total']
+        )['total'] or Decimal('0')#!!
+        return res
+    
+    @transaction.atomic()
+    def update_exp_val(self, id: uuid.UUID) -> int:
+        '''Returns 1 if updated & 0 if no rows affected'''
+        return self.deal_repo.update(id=id, expected_value=self._calc_exp_val(id=id))
     
     @transaction.atomic
     def open(self, **kwargs)-> Deal:
@@ -64,33 +69,27 @@ class DealService():
                 self.contract_service.open(deal_id=deal.pk)#close deal entity & return affected rows
             self.account_service.update_status(id=deal.account_id)
             return deal
-        
-    def add_item(self, deal_id: uuid.UUID, di_id: uuid.UUID):
-        # di = self._get_di(id=di_id)
-        # di.deal_id = deal_id; di.save() #!
-        try:
-            with transaction.atomic():
-                # Try to merge into 1 qur
-                updated: int = self.di_repo.session.objects.filter(pk=di_id).update(deal_id=deal_id)
-                if not updated: raise DealItemNotFound(DealItemNotFound.MSG)
 
-                updated: int = self.deal_repo.session.objects.filter(pk=deal_id).update(expected_value=self.get_exp_val(id=deal_id))
-                if not updated: raise DealNotFound(DealNotFound.MSG)
-        except Exception as e:
-            raise DealCanNotUpdate(f'{DealCanNotUpdate.MSG}.\nMore: {e}')
+    def add_item(self, deal_id: uuid.UUID, **di_kwargs) -> DealItem:
+        with transaction.atomic():
+            # Try to merge into 1 qur
+            di = self.di_repo.save(deal_id=deal_id, **di_kwargs)
+            updated: int = self.update_exp_val(id=deal_id)
+            if not updated: raise DealNotFound(DealNotFound.MSG)
+            return di
 
-    def remove_item(self, deal_id: uuid.UUID, di_id: uuid.UUID):
+    def remove_item(self, di_id: uuid.UUID, deal_id: uuid.UUID|None=None)-> None:
         '''
         Removes item from the deal.\n
         *NOT FROM DATABASE*
         '''
         # di = self._get_di(id=di_id)
         # di.deal = None; di.save()
-        try:
-            with transaction.atomic():
-                updated: int = self.di_repo.session.objects.filter(pk=di_id).update(deal=None)
-                if not updated: raise DealItemNotFound(DealItemNotFound.MSG)
-                updated: int = self.deal_repo.session.objects.filter(pk=deal_id).update(expected_value=self.get_exp_val(id=deal_id))
-                if not updated: raise DealNotFound(DealNotFound.MSG)
-        except Exception as e:
-            raise DealCanNotUpdate(f'{DealCanNotUpdate.MSG}. More: {e}')
+        with transaction.atomic():
+            if not deal_id:
+                di = self._get_di(id=di_id)
+                deal_id = di.deal_id
+
+            self.di_repo.delete(id=di_id) # Delete di
+            updated: int = self.update_exp_val(id=deal_id)
+            if not updated: raise DealNotFound(DealNotFound.MSG)
