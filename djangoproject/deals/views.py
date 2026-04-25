@@ -53,6 +53,7 @@ class DealViewSet(ModelViewSet):
     @extend_schema(operation_id='v1_deals_add_deal_item', request=None)
     @action(methods=['post'], detail=True, url_path='items')
     def add_item(self, request, *args, **kwargs):
+        '''Add an item to the deal'''
         serializer = DealItemInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         di = self.service.add_item(deal_id=kwargs['pk'], **serializer.validated_data)
@@ -61,6 +62,16 @@ class DealViewSet(ModelViewSet):
     @extend_schema(operation_id='v1_deals_remove_deal_item', request=None) #specify di_id param to resolve prblms in openapi
     @action(methods=['post'], detail=True, url_path='items/(?P<di_id>[^/.]+)') #capture res into di_id by the rule: seq of chars up to '/' or '.'
     def remove_item(self, request, *args, **kwargs):
+        '''Remove an di from the deal (completely)'''
         deal_id, di_id = kwargs['pk'], kwargs['di_id']
         self.service.remove_item(di_id=di_id, deal_id=deal_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    @extend_schema(operation_id='v1_deals_update_deal_item', request=DealItemInputSerializer) #specify di_id param to resolve prblms in openapi
+    @action(methods=['put'], detail=True, url_path='items/(?P<di_id>[^/.]+)') #capture res into di_id by the rule: seq of chars up to '/' or '.'
+    #Add patch too later
+    def update_item(self, request, *args, **kwargs):
+        '''Remove an di from the deal (completely)'''
+        deal_id, di_id = kwargs['pk'], kwargs['di_id']
+        self.service.di_repo.update(id=di_id, **kwargs) # bad idea to use repo here. make better later
+        return Response(status=status.HTTP_200_OK)
