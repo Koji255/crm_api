@@ -30,6 +30,8 @@ class ContractService:
     
     def open(self, deal_id: uuid.UUID) -> Contract:
         '''Implement async task via celery to make contracts expiration'''
+        from .tasks import mail_contract_opened
+
         #  requires real db like postgres to workk
         with transaction.atomic():
             contract = self.contract_repo.save()
@@ -48,4 +50,14 @@ class ContractService:
                 q.end_date = start_date + timedelta(weeks=4*q.access_months)
                 # q.save()
             qs.bulk_update(qs, fields=['start_date', 'end_date']) # n+1 fix
+
+            contact = contract.deal_from_contract.primary_contact
+            if contact:
+                mail_contract_opened.delay(contract_id=contract.pk, contact_emails=[contact.email])
             return contract
+        
+    def update_status(self, id: uuid.UUID) -> None:
+        '''If * deal items (bounded to this contract) are outdated, contract becomes expired'''
+        active_dis = self.di_repo.list_active_dis_by_contract(contract_id=id, current_date=timezone.datetime.date().today()) #new n+1 prblm
+        if not active_dis.exists():
+            self.contract_repo.update(id=id, status=ContractStatus.EXPIRED)

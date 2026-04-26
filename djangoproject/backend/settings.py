@@ -109,6 +109,24 @@ DATABASES = {
 
 AUTH_USER_MODEL = 'users.User'
 
+EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    'update_contract_status_daily': {
+        'task': 'contracts.tasks.update_contract_status',
+        'schedule': crontab(hour=0, minute=0),
+    },
+}
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_TIMEZONE = 'Europe/Moscow'
+CELERY_TASK_ALWAYS_EAGER = True # skip redis for tests
+CELERY_TASK_EAGER_PROPAGATES = True #smae
+
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
@@ -133,7 +151,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 

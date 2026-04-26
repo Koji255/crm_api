@@ -2,7 +2,7 @@ import pytest
 from datetime import timedelta
 from django.utils import timezone
 from deals.models import DealItem as DealItemModel
-from accounts.models import Account as AccountModel
+from accounts.models import Account as AccountModel, Contact as ContactModel
 from contracts.services import ContractService
 
 @pytest.mark.contract
@@ -16,9 +16,10 @@ class TestContract:
             city='New York',
             address='Quins 7'
         )
+        contact = ContactModel.objects.create(first_name='Somename', email='someemail@gmail.com', account_id=account.pk) #!
         owner = users_model['manager2']
         #New deal
-        deal = deal_service.open(account_id=account.pk, owner_id=owner.pk)
+        deal = deal_service.open(account_id=account.pk, owner_id=owner.pk, primary_contact_id=contact.pk)#!
         # dealitem & access_months
         di = DealItemModel.objects.create(
             deal=deal,

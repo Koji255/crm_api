@@ -10,6 +10,6 @@ class ContractRepository(BaseRepository):
         inst = self.session.objects.create(**kwargs)
         return inst
     
-    def update(self, **kwargs) -> None:
-        '''Can not update contract entity'''
-        return
+    # def update(self, **kwargs) -> None:
+    #     '''Can not update contract entity'''
+    #     return
