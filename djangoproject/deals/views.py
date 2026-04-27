@@ -7,6 +7,7 @@ from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from backend.structures import DealStatus
 from accounts.services import AccountService
@@ -14,23 +15,27 @@ from contracts.services import ContractService
 from .models import Deal
 from .serializers import DealGeneralSerializer, DealCloseSerializer, DealItemInputSerializer, DealItemOutputSerializer
 from .services import DealService
+from users.permissions import isManagerOrDirector
+from rest_framework.permissions import AllowAny
 
 
 # Create your views here.
 @extend_schema(tags=['v1_deals'])
 class DealViewSet(ModelViewSet):
     serializer_class = DealGeneralSerializer
+    authentication_classes= [JWTAuthentication]
+    permission_classes = [AllowAny]
     service = DealService(contract_service=ContractService(), account_service=AccountService())
     queryset= Deal.objects.all()
     http_method_names = ['post', 'get', 'put', 'patch'] # No delete
 
     def get_permissions(self):
         if self.action in ('create', 'update', 'partial_update', 'destroy'):
-            return [isManagerOrDirector]
+            return [isManagerOrDirector()]
         return super().get_permissions()
     
     def get_queryset(self):
-        return Deal.objects.select_related('contract_from_deal', 'account_from_deal', 'contact_from_deal') #should be optimized (in service)
+        return Deal.objects.select_related('contract', 'account', 'primary_contact') #should be optimized (in service)
     
     def create(self, request, *args, **kwargs):
         '''Open the deal'''
@@ -46,7 +51,7 @@ class DealViewSet(ModelViewSet):
         '''Close the deal'''
         serializer = DealCloseSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        deal = self.service.close(**serializer.validated_data)
+        deal = self.service.close(id=kwargs['pk'], **serializer.validated_data)
         serializer = DealGeneralSerializer(deal)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
     

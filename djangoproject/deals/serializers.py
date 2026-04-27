@@ -12,7 +12,7 @@ class DealGeneralSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class DealCloseSerializer(serializers.Serializer):
-    deal_status = serializers.ChoiceField(choices=DealStatus.choices)
+    status = serializers.ChoiceField(choices=DealStatus.choices)
     loss_reason = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
 class DealItemOutputSerializer(serializers.ModelSerializer):

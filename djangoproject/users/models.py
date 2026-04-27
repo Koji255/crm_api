@@ -20,7 +20,7 @@ class User(AbstractUser):
         group = self.groups.first()
         return group.name if group else None
     
-    @property
+    # @property
     def has_role(self, name: str) -> bool:
         group = self.groups.first()
         return group.name == name

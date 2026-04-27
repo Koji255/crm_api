@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import Course
 from .services import CourseService
@@ -28,13 +29,14 @@ class CourseWebHooks:
 
 @extend_schema(tags=['v1_products'])
 class CourseViewSet(ModelViewSet):
+    # authentication_classes = [JWTAuthentication]
     serializer_class = CourseGeneralSerializer
     queryset = Course.objects.all()
     service = CourseService()
 
     def get_permissions(self):
         if self.action in ('create' , 'update', 'partial_update', 'destroy'):
-            return [isManagerOrDirector]
+            return [isManagerOrDirector()]
         return super().get_permissions()
         
     def destroy(self, request, *args, **kwargs):
@@ -51,14 +53,14 @@ class CourseViewSet(ModelViewSet):
     def activate(self, request, pk=None):
         course =self.service.activate(id=pk)
         serializer = CourseGeneralSerializer(course)
-        return self.response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
     
     @extend_schema(summary='v1_courses_archive')
     @action(methods=['post'], detail=True)
     def archive(self, request, pk=None):
         course =self.service.archive(id=pk)
         serializer = CourseGeneralSerializer(course)
-        return self.response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
         
 
 

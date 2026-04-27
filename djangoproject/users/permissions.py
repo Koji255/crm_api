@@ -11,8 +11,8 @@ class _HasRole(BasePermission):
         # if len(self.required_roles) == 1: #If there are only one required role & no need 
         if not user.is_authenticated:
             return False
-        for role in self.required_roles:
-            if user.has_role(role): #if user has at least 1 required role return true
+        for role_name in self.required_roles:
+            if user.has_role(role_name): #if user has at least 1 required role return true
                 return True
         return False
         
