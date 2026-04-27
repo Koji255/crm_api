@@ -124,7 +124,8 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_TIMEZONE = 'Europe/Moscow'
-CELERY_TASK_ALWAYS_EAGER = True # skip redis for tests
+# disable broker (for tests)
+CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True #smae
 
 # Password validation
