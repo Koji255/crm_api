@@ -20,7 +20,7 @@ class DealItemNotFound(Exception):
 
 
 def default_working_date():
-    return timezone.now() + timedelta(weeks=2.0)
+    return timezone.now().date() + timedelta(weeks=2.0)
 
 class Deal(models.Model):
     #default close_data
@@ -48,7 +48,7 @@ class Deal(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f'id:{str(self.pk)[:8]}', f'account:{self.account.name}', f'owner:{self.owner.username}'
+        return f'id:{str(self.pk)[:8]}, account:{self.account.name}, owner:{self.owner.username if self.owner else None}'
     
     @property
     def is_open(self) -> bool:

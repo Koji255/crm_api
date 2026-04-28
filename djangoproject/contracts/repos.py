@@ -27,6 +27,7 @@ class ContractRepository(BaseRepository):
                 F('deal_from_contract__di_from_deal__access_months')
             )
         )['ttl'] or Decimal('0')
+
     
     def total_value_last_month_contracts(self) -> Decimal:
         month_ago = timezone.now()-timedelta(days=30)

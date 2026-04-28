@@ -29,7 +29,7 @@ urlpatterns = [
     path(r'api/v1/', include('products.urls')),
     path(r'api/v1/', include('deals.urls')),
     path(r'api/v1/', include('contracts.urls')),
-
+    path(r'api/v1/analytics/', include('analytics.urls')),
 
     path('schema-viewer/', include('schema_viewer.urls')), #db schema
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

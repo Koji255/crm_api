@@ -1,7 +1,7 @@
 from uuid import UUID
 from datetime import datetime
 from decimal import Decimal
-from django.db.models import QuerySet, Sum, F
+from django.db.models import QuerySet, Sum, F, Q
 from backend.interfaces import AbstractRepository, BaseRepository
 from backend.structures import DealStatus
 from .models import Deal, DealItem
@@ -13,14 +13,14 @@ class DealRepository(BaseRepository):
         inst = self.session.objects.create(**kwargs)
         return inst
     
-    def count_total_deals(self) -> int:
-        return self.session.objects.filter(status=DealStatus.WON).count()
-
-    def count_won_deals(self) -> int:
+    def count_all_deals(self) -> int:
         return self.session.objects.count()
     
+    def count_won_deals(self) -> int:
+        return self.session.objects.filter(status=DealStatus.WON).count()
+    
     def total_value_deals(self) -> Decimal:
-        return self.session.objects.aggregate(
+        return self.session.objects.filter(contract__isnull=True).aggregate(
             ttl=Sum(
                 F('di_from_deal__course__unit_price') * F('di_from_deal__quantity') *F('di_from_deal__access_months')
             )

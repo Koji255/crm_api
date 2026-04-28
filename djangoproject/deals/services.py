@@ -12,11 +12,13 @@ from products.models import Course#, ProductItem
 # from products.services import ProductItemService
 from .models import Deal, DealItem, DealNotFound, DealNotAvailable, DealItemNotFound, DealCanNotUpdate
 from .repos import DealRepository, DealItemRepository
+from contracts.repos import ContractRepository
 
 class DealService():
     def __init__(self, account_service=None, contract_service=None):
         self.deal_repo = DealRepository()
         self.di_repo = DealItemRepository()
+        self.contract_repo = ContractRepository()
         self.account_service = account_service
         self.contract_service = contract_service
 
@@ -73,6 +75,8 @@ class DealService():
     def add_item(self, deal_id: uuid.UUID, **di_kwargs) -> DealItem:
         with transaction.atomic():
             # Try to merge into 1 qur
+            if self.contract_repo.session.objects.filter(deal_from_contract__id=deal_id).exists():
+                raise DealCanNotUpdate(DealCanNotUpdate.MSG)
             di = self.di_repo.save(deal_id=deal_id, **di_kwargs)
             updated: int = self.update_exp_val(id=deal_id)
             if not updated: raise DealNotFound(DealNotFound.MSG)

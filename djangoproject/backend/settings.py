@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'accounts',
     'products',
     'deals',
-    'contracts'
+    'contracts',
+    'analytics'
 ]
 
 MIDDLEWARE = [
@@ -94,7 +95,7 @@ SIMPLE_JWT = {
 SPECTACULAR_SETTINGS = {
     'TITLE': 'CRM API',
     'DESCRIPTION': 'MVP ver. of crm api based on DDD & SOLID principles',
-    'VERSION': '0.0.0',
+    'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
