@@ -1,0 +1,39 @@
+services:
+  backend:
+    # build: backend/
+    image: crm_api_backend:latest
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      .env
+    ports:
+      - "8080:8000"
+    volumes:
+      - ./djangoproject/:/backend
+    depends_on:
+      db:
+        condition: service_healthy
+      #celery?
+  
+  db:
+    image: postgres:18-alpine # alpine ver more lightweight & security improvements
+    # env_file:
+    #   - .env
+    volumes:
+      - postgres-data:/var/lib/postgresql/18/docker/ #new path for pstgres:18+ (including alpine imgs)
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+  # celery:
+
+
+volumes:
+  postgres-data:

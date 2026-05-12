@@ -1,0 +1,758 @@
+HTTP/1.1 404 Not Found
+Date: Tue, 12 May 2026 18:50:24 GMT
+Server: WSGIServer/0.2 CPython/3.13.13
+Content-Type: text/html; charset=utf-8
+X-Frame-Options: DENY
+Content-Length: 16273
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Cross-Origin-Opener-Policy: same-origin
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <title>Page not found at /api/v1/auth/token/create/</title>
+  <meta name="robots" content="NONE,NOARCHIVE">
+  <style>
+    html * { padding:0; margin:0; }
+    body * { padding:10px 20px; }
+    body * * { padding:0; }
+    body { font-family: sans-serif; background:#eee; color:#000; }
+    body > :where(header, main, footer) { border-bottom:1px solid #ddd; }
+    h1 { font-weight:normal; margin-bottom:.4em; }
+    h1 small { font-size:60%; color:#666; font-weight:normal; }
+    table { border:none; border-collapse: collapse; width:100%; }
+    td, th { vertical-align:top; padding:2px 3px; }
+    th { width:12em; text-align:right; color:#666; padding-right:.5em; }
+    #info { background:#f6f6f6; }
+    #info ol { margin: 0.5em 4em; }
+    #info ol li { font-family: monospace; }
+    #summary { background: #ffc; }
+    #explanation { background:#eee; border-bottom: 0px none; }
+    pre.exception_value { font-family: sans-serif; color: #575757; font-size: 1.5em; margin: 10px 0 10px 0; }
+  </style>
+</head>
+<body>
+  <header id="summary">
+    <h1>Page not found <small>(404)</small></h1>
+    
+    <table class="meta">
+      <tr>
+        <th scope="row">Request Method:</th>
+        <td>GET</td>
+      </tr>
+      <tr>
+        <th scope="row">Request URL:</th>
+        <td>http://localhost:8080/api/v1/auth/token/create/</td>
+      </tr>
+      
+    </table>
+  </header>
+
+  <main id="info">
+    
+      <p>
+      Using the URLconf defined in <code>backend.urls</code>,
+      Django tried these URL patterns, in this order:
+      </p>
+      <ol>
+        
+          <li>
+            
+              <code>
+                admin/
+                
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api-auth/
+                
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/$
+                [name='user-list']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users\.(?P&lt;format&gt;[a-z0-9]+)/?$
+                [name='user-list']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/activation/$
+                [name='user-activation']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/activation\.(?P&lt;format&gt;[a-z0-9]+)/?$
+                [name='user-activation']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/me/$
+                [name='user-me']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/me\.(?P&lt;format&gt;[a-z0-9]+)/?$
+                [name='user-me']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/resend_activation/$
+                [name='user-resend-activation']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/resend_activation\.(?P&lt;format&gt;[a-z0-9]+)/?$
+                [name='user-resend-activation']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/reset_password/$
+                [name='user-reset-password']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/reset_password\.(?P&lt;format&gt;[a-z0-9]+)/?$
+                [name='user-reset-password']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/reset_password_confirm/$
+                [name='user-reset-password-confirm']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/reset_password_confirm\.(?P&lt;format&gt;[a-z0-9]+)/?$
+                [name='user-reset-password-confirm']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/reset_username/$
+                [name='user-reset-username']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/reset_username\.(?P&lt;format&gt;[a-z0-9]+)/?$
+                [name='user-reset-username']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/reset_username_confirm/$
+                [name='user-reset-username-confirm']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/reset_username_confirm\.(?P&lt;format&gt;[a-z0-9]+)/?$
+                [name='user-reset-username-confirm']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/set_password/$
+                [name='user-set-password']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/set_password\.(?P&lt;format&gt;[a-z0-9]+)/?$
+                [name='user-set-password']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/set_username/$
+                [name='user-set-username']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/set_username\.(?P&lt;format&gt;[a-z0-9]+)/?$
+                [name='user-set-username']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/(?P&lt;id&gt;[^/.]+)/$
+                [name='user-detail']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^users/(?P&lt;id&gt;[^/.]+)\.(?P&lt;format&gt;[a-z0-9]+)/?$
+                [name='user-detail']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                
+                [name='api-root']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                &lt;drf_format_suffix:format&gt;
+                [name='api-root']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                ^api/v1/auth/
+                
+              </code>
+            
+              <code>
+                ^jwt/create/?
+                [name='jwt-create']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                ^api/v1/auth/
+                
+              </code>
+            
+              <code>
+                ^jwt/refresh/?
+                [name='jwt-refresh']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                ^api/v1/auth/
+                
+              </code>
+            
+              <code>
+                ^jwt/verify/?
+                [name='jwt-verify']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                &lt;uuid:user_id&gt;/role/
+                [name='role_set_revoke']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^accounts/$
+                [name='account-list']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^accounts/(?P&lt;pk&gt;[^/.]+)/$
+                [name='account-detail']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^contacts/$
+                [name='contact-list']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^contacts/(?P&lt;pk&gt;[^/.]+)/$
+                [name='contact-detail']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^courses/$
+                [name='courses-list']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^courses/(?P&lt;pk&gt;[^/.]+)/$
+                [name='courses-detail']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^courses/(?P&lt;pk&gt;[^/.]+)/activate/$
+                [name='courses-activate']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^courses/(?P&lt;pk&gt;[^/.]+)/archive/$
+                [name='courses-archive']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^deals/$
+                [name='deals-list']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^deals/(?P&lt;pk&gt;[^/.]+)/$
+                [name='deals-detail']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^deals/(?P&lt;pk&gt;[^/.]+)/items/$
+                [name='deals-add-item']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^deals/(?P&lt;pk&gt;[^/.]+)/close/$
+                [name='deals-close']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^deals/(?P&lt;pk&gt;[^/.]+)/items/(?P&lt;di_id&gt;[^/.]+)/$
+                [name='deals-remove-item']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^deals/(?P&lt;pk&gt;[^/.]+)/items/(?P&lt;di_id&gt;[^/.]+)/$
+                [name='deals-update-item']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^contracts/$
+                [name='contracts-list']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/
+                
+              </code>
+            
+              <code>
+                ^contracts/(?P&lt;pk&gt;[^/.]+)/$
+                [name='contracts-detail']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/v1/analytics/
+                
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                schema-viewer/
+                
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/schema/
+                [name='schema']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/schema/swagger-ui/
+                [name='swagger-ui']
+              </code>
+            
+          </li>
+        
+          <li>
+            
+              <code>
+                api/schema/redoc/
+                [name='redoc']
+              </code>
+            
+          </li>
+        
+      </ol>
+      <p>
+        
+          The current path, <code>api/v1/auth/token/create/</code>,
+        
+        didn’t match any of these.
+      </p>
+    
+  </main>
+
+  <footer id="explanation">
+    <p>
+      You’re seeing this error because you have <code>DEBUG = True</code> in
+      your Django settings file. Change that to <code>False</code>, and Django
+      will display a standard 404 page.
+    </p>
+  </footer>
+</body>
+</html>
