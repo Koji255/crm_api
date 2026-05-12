@@ -8,7 +8,7 @@ services:
     ports:
       - "8080:8000"
     volumes:
-      - ./djangoproject/:/backend
+      - ./djangoproject/:/backend #gives to the container vision of the backend
     depends_on:
       db:
         condition: service_healthy
@@ -33,7 +33,34 @@ services:
       retries: 3
       start_period: 5s
   # celery:
-
+  redis:
+    image: redis:7-alpine
+  celery-worker:
+    image: crm_api_backend:latest
+    command: sh -c "celery -A backend worker -l info"
+    env_file:
+      - .env
+    volumes:
+      - ./djangoproject/:/backend
+    depends_on:
+      redis:
+        condition: service_started
+      db:
+        condition: service_healthy
+  celery-beat:
+    image: crm_api_backend:latest
+    command: sh -c "celery -A backend beat -l info"
+    env_file:
+      - .env
+    volumes:
+      - ./djangoproject/:/backend
+    depends_on:
+      redis:
+        condition: service_started
+      db:
+        condition: service_healthy
+      celery-worker:
+        condition: service_started
 
 volumes:
   postgres-data:
