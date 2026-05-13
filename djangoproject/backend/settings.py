@@ -149,7 +149,7 @@ from celery.schedules import crontab
 CELERY_BEAT_SCHEDULE = {
     'update_contract_status_daily': {
         'task': 'contracts.tasks.update_contract_status',
-        'schedule': crontab(hour=0, minute=0),
+        'schedule': crontab(hour=0, minute=0), # every day updtes
     },
 }
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/0')

@@ -17,17 +17,26 @@ from accounts.models import Account as AccountModel
 from accounts.services import AccountService
 from contracts.services import ContractService
 
-
 User = get_user_model()
 
 ServiceType = TypeVar('Service')
 RepoType = TypeVar('Repo')
 UserModel = TypeVar('User')
 
-
 @pytest.fixture
 def client() -> APIClient:
-    return APIClient()
+    return APIClient(enforce_csrf_checks=True) # wrks only with login
+
+@pytest.fixture
+def fa_client(db) -> APIClient:
+    '''Client with force_authentication'''
+    user = User.objects.create_user(username='test_clinet', email='test_email@gmail.com', password='test_password3684$#1!')
+    group, _ = Group.objects.get_or_create(name='manager')
+    user.groups.add(group)
+
+    client = APIClient()
+    client.force_authenticate(user=user)
+    return client
 
 @pytest.fixture
 def users_model(db) -> Dict[str, UserModel]:

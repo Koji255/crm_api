@@ -5,7 +5,7 @@ from celery import shared_task
 from .services import ContractService
 
 @shared_task
-def update_contract_status(contract_id: UUID):
+def update_contract_status():
     service = ContractService()
     qs = service.contract_repo.list()
     for q in qs:

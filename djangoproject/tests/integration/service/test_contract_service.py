@@ -24,7 +24,6 @@ class TestContract:
         di = DealItemModel.objects.create(
             deal=deal,
             course=courses_model['course1'],
-            quantity=1,
             access_months=2
         )
 

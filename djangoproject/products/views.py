@@ -38,7 +38,7 @@ class CourseViewSet(ModelViewSet):
         if self.action in ('create' , 'update', 'partial_update', 'destroy'):
             return [isManagerOrDirector()]
         return super().get_permissions()
-        
+
     def destroy(self, request, *args, **kwargs):
         course_id = kwargs['pk']
         try:
