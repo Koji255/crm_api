@@ -45,7 +45,7 @@ class DealViewSet(ModelViewSet):
         serializer = DealGeneralSerializer(deal) # Can change on DealInputSerializer
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
-    @extend_schema(operation_id='v1_deals_close', request=None)
+    @extend_schema(operation_id='v1_deals_close', request=DealCloseSerializer)
     @action(methods=['post'], detail=True)
     def close(self, request, *args, **kwargs):
         '''Close the deal'''
@@ -55,7 +55,7 @@ class DealViewSet(ModelViewSet):
         serializer = DealGeneralSerializer(deal)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
     
-    @extend_schema(operation_id='v1_deals_add_deal_item', request=None)
+    @extend_schema(operation_id='v1_deals_add_deal_item', request=DealItemInputSerializer)
     @action(methods=['post'], detail=True, url_path='items')
     def add_item(self, request, *args, **kwargs):
         '''Add an item to the deal'''

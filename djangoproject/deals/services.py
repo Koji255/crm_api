@@ -69,7 +69,9 @@ class DealService():
             deal = self._get_deal(id=id)
             if status == DealStatus.WON:
                 self.contract_service.open(deal_id=deal.pk)#close deal entity & return affected rows
+                # self.deal_repo.update(id=id, contract)
             self.account_service.update_status(id=deal.account_id)
+            deal.refresh_from_db() # because of deal.contract_id update in contract service
             return deal
 
     def add_item(self, deal_id: uuid.UUID, **di_kwargs) -> DealItem:
