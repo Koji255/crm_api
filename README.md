@@ -60,6 +60,7 @@ http://localhost:8080/api/schema/swagger-ui/
 git clone https://github.com/Koji255/crm_api.git
 cd crm_api
 #create .env file & configure environment variables like in .env.example
+docker buildx build -t crm_api_backend:latest djangoproject\
 docker compose up --build
 #test suite
 docker compose exec backend pytest
