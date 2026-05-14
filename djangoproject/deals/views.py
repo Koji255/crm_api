@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from django.contrib.auth.models import Group
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, SAFE_METHODS
 from users.permissions import isDirector, isManager, isAnalyst, isManagerOrDirector
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes, action
@@ -10,6 +11,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from backend.structures import DealStatus
+from backend.paginations import LargeDataSetPagination
 from accounts.services import AccountService
 from contracts.services import ContractService
 from .models import Deal
@@ -23,20 +25,28 @@ from rest_framework.permissions import AllowAny
 @extend_schema(tags=['v1_deals'])
 class DealViewSet(ModelViewSet):
     serializer_class = DealGeneralSerializer
-    authentication_classes= [JWTAuthentication]
-    permission_classes = [AllowAny]
-    service = DealService(contract_service=ContractService(), account_service=AccountService())
+    pagination_class = LargeDataSetPagination
+    # authentication_classes= [JWTAuthentication]
+    # permission_classes = [AllowAny]
     queryset= Deal.objects.all()
     http_method_names = ['post', 'get', 'put', 'patch'] # No delete
+    service = DealService(contract_service=ContractService(), account_service=AccountService())
 
     def get_permissions(self):
-        if self.action in ('create', 'update', 'partial_update', 'destroy'):
+        # if self.action in ('create', 'update', 'partial_update', 'destroy'):
+        if self.action not in SAFE_METHODS:
             return [isManagerOrDirector()]
         return super().get_permissions()
     
     def get_queryset(self):
-        return Deal.objects.select_related('contract', 'account', 'primary_contact') #should be optimized (in service)
-    
+        usr = self.request.user
+        qs = Deal.objects.select_related('contract', 'account', 'primary_contact') #should be optimized (in service)
+        #if user is director - return * deals
+        if Group.objects.filter(name='manager').exists():
+            qs.filter(owner_id=usr.pk)
+        # elif director or analyst return * deals
+        return qs
+
     def create(self, request, *args, **kwargs):
         '''Open the deal'''
         serializer = DealGeneralSerializer(data=request.data)

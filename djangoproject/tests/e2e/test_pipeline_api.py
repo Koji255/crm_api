@@ -105,13 +105,3 @@ class TestPipeline:
         assert deal_close_won_rsp.status_code == 200; ic(deal_close_won_rsp.data)
         assert deal_close_won_rsp.data['status'] == DealStatus.WON
         assert deal_close_won_rsp.data['contract'] is not None
-        # ctrcts = fa_client.get(
-        #     path=f'/api/v1/contracts/',
-        #     format='json',
-        # )
-        # ic(ctrcts.data)
-        # deals = fa_client.get(
-        #     path=f'/api/v1/deals/',
-        #     format='json',
-        # )
-        # ic(deals.data)

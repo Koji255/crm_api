@@ -1,6 +1,7 @@
 import pytest
 from rest_framework.test import APIClient
 from icecream import ic
+from typing import Dict, Any
 
 @pytest.mark.e2e
 class TestProductApi:
@@ -53,3 +54,12 @@ class TestProductApi:
             f'/api/v1/courses/{created_course_id}/',
         )
         assert response.status_code == 204
+
+    def test_product_retrieve(self, fa_client: APIClient, courses_model: Dict[str, Any]):
+        rsp = fa_client.get(
+            path='/api/v1/courses/?limit=100&offset=0', # retrieve first 100 products starting from the first
+            content_type='application/json', 
+        )
+        assert rsp.data is not None#; ic(rsp.data)
+        assert rsp.data['count'] > 0; ic(rsp.data['count'])
+        assert rsp.data['count'] == len(courses_model)

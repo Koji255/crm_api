@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, SAFE_METHODS
 from users.permissions import isDirector, isManager, isAnalyst, isManagerOrDirector
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes, action
@@ -35,7 +35,8 @@ class CourseViewSet(ModelViewSet):
     service = CourseService()
 
     def get_permissions(self):
-        if self.action in ('create' , 'update', 'partial_update', 'destroy'):
+        # if self.action in ('create' , 'update', 'partial_update', 'destroy'):
+        if self.action not in SAFE_METHODS:
             return [isManagerOrDirector()]
         return super().get_permissions()
 
