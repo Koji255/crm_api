@@ -55,6 +55,19 @@ After running the project, live API documentation is available at:
 http://localhost:8080/api/schema/redoc/
 http://localhost:8080/api/schema/swagger-ui/
 ```
+## Quick Start
+```bash
+git clone https://github.com/Koji255/crm_api.git
+cd crm_api
+#create .env file & configure environment variables like in .env.example
+docker compose up --build
+#test suite
+docker compose exec backend pytest
+```
+
 ## API Preview:
+Redoc:
 ![ReDoc](documentation/api_specification/redoc_preview.png)
+
+Swagger UI:
 ![Swagger UI](documentation/api_specification/swagger_ui_preview.png)
