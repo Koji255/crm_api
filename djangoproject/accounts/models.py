@@ -36,7 +36,7 @@ class Account(models.Model):
 
     def save(self, *args, **kwargs):
         # Check if such an account already in db
-        # Replace later with Meta constraints (UniqueConstraint)
+        #Meta constraints (UniqueConstraint)?
         accounts = Account.objects.filter(
             name=self.name, 
             country=self.country,

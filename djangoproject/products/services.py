@@ -35,7 +35,7 @@ class CourseService():
     def remove(self, id: uuid.UUID):
         with transaction.atomic():
             # There are already archive() method, that allows to softly change course's status on archived & pop it from * deals, only contracts will store with row
-            # So first check contracts existence. If contracts in game, we should make soft status migration using archive
+            # First check contracts existence. If contracts in game, we should make soft status migration using archive
             # else it is possible to forcifully delete the course via repo
             related_contracts: bool = self.di_repo.session.objects.filter( Q(course_id=id) & Q(deal__contract__isnull=False) ).exists()
             if related_contracts:

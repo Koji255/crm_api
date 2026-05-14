@@ -13,7 +13,7 @@ from .services import UserService
 class RoleAPIView(APIView):
     permission_classes = [isDirector]
     service = UserService()
-    serializer_class = RoleInputSerializer # Later implement General serializer.
+    serializer_class = RoleInputSerializer # General serializer?
 
     @extend_schema(request=RoleInputSerializer, summary='v1_set_role')
     def put(self, request, pk):

@@ -5,6 +5,9 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 from backend.structures import GroupEnum
 
+class UserNotFound(Exception):
+    MSG = 'User with such an id was not found'
+
 # Create your models here.
 class User(AbstractUser):
     #Users are only university's staff. They manage all things in crm, while accounts are just counterparties, that have no access to the crm

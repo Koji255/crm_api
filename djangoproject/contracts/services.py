@@ -21,7 +21,7 @@ class ContractService:
         '''
         Returns Contract model object. Later replace with dto
         '''
-        self.contract_repo.session.objects.filter(end_date_lt=timezone.now()).update(status=ContractStatus.EXPIRED) #костыль, later will upgrade on celery check_expired_contracts
+        # self.contract_repo.session.objects.filter(end_date_lt=timezone.now()).update(status=ContractStatus.EXPIRED) #костыль, later will upgrade on celery check_expired_contracts # udp fixed with beat func in tasks
         try:
             contract = Contract.objects.get(pk=contract_id)
         except Contract.DoesNotExist as e:

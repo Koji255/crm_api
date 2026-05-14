@@ -40,7 +40,7 @@ class DealViewSet(ModelViewSet):
     
     def get_queryset(self):
         usr = self.request.user
-        qs = Deal.objects.select_related('contract', 'account', 'primary_contact') #should be optimized (in service)
+        qs = Deal.objects.select_related('contract', 'account', 'primary_contact')
         #if user is director - return * deals
         if Group.objects.filter(name='manager').exists():
             qs.filter(owner_id=usr.pk)
@@ -88,5 +88,5 @@ class DealViewSet(ModelViewSet):
     def update_item(self, request, *args, **kwargs):
         '''Remove an di from the deal (completely)'''
         deal_id, di_id = kwargs['pk'], kwargs['di_id']
-        self.service.di_repo.update(id=di_id, **kwargs) # bad idea to use repo here. make better later
+        self.service.di_repo.update(id=di_id, **kwargs)
         return Response(status=status.HTTP_200_OK)
