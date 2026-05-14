@@ -72,8 +72,18 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
         # 'rest_framework.permissions.IsAuthenticated',
     ),
-    'DEFAULT_PAGINATION_CLASS': 'backend.paginations.DefaultLimitOffsetPagination', #for non-heavy db curs (for complex qurs LargeDataSetPaginator will be called)
+
+    #devops stuf
+    'DEFAULT_PAGINATION_CLASS': 'backend.paginations.DefaultLimitOffsetPagination', # for non-heavy db curs (for complex qurs LargeDataSetPaginator will be called)
     # 'PAGE_SIZE': 100
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '10/day',
+        'user': '1000/day'
+    }
 }
 
 
