@@ -11,7 +11,7 @@
 ![Pytest](https://img.shields.io/badge/Pytest-Testing-0A9EDC?logo=pytest&logoColor=white)
 ![OpenAPI](https://img.shields.io/badge/OpenAPI-Documentation-6BA539?logo=openapiinitiative&logoColor=white)
 
-Production-style REST API for a B2B CRM system focused on corporate course sales, customer management, deal tracking, contracts, and sales analytics.
+Production-style Django REST API for a B2B CRM system focused on corporate course sales, customer management, deal tracking, contracts, and sales analytics.
 
 Built as the main portfolio project.
 
@@ -29,10 +29,12 @@ Built as the main portfolio project.
 
 - User roles and JWT-based authentication (RBAC)
 - Domain-oriented architecture (DDD)
+- Automated test suite
 - Pagination
-- Basic throttling configuration
-- Background tasks with Celery, asynchronous email service
-- Optimized lightweight Docker images based on Alpine Linux
+- Throttling configuration
+- Background tasks with Redis & Celery, asynchronous email service
+- Dockerized multi-service environment based on Alpine Linux
+
 
 ## Main Use Cases
 
@@ -52,3 +54,7 @@ After running the project, live API documentation is available at:
 ```text
 http://localhost:8080/api/schema/redoc/
 http://localhost:8080/api/schema/swagger-ui/
+```
+## API Preview:
+![ReDoc](documentation/api_specification/redoc_preview.png)
+![Swagger UI](documentation/api_specification/swagger_ui_preview.png)
